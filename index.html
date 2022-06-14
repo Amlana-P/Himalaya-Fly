@@ -10,17 +10,20 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
     <h1>Project Himalaya Fly</h1>
 
     <div class="container">
         <div class="row">
-            <div class="col"><p class="xAxis"></p></div>
-            <div class="col"><p class="yAxis"></p></div>
-            <div class="col"><p class="zAxis"></p></div>
+            <div class="col"><p class="xAxis">1</p></div>
+            <div class="col"><p class="yAxis">2</p></div>
+            <div class="col"><p class="zAxis">3</p></div>
         </div>
+
+        <br>
+        <button onclick='requestOrientationPermission();'>Request orientation permission</button>
     </div>
 </body>
-<script src="script.js"></script>
 </html>
