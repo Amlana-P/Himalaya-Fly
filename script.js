@@ -8,7 +8,7 @@ else {
 }
 
 function accelerometerUpdate(e) {
-	milliseconds = 1000;
+	milliseconds = 5000;
 	myInterval = setInterval(getNewValues, milliseconds);
 		
 	function getNewValues(){
