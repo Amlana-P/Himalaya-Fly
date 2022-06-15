@@ -8,10 +8,10 @@ else {
 }
 
 function accelerometerUpdate(e) {
-	DeviceMotionEvent.myInterval = 1000;
+	DeviceMotionEvent.myInterval = 10000;
 
-	document.getElementById('xAxis').innerHTML = e.accelerationIncludingGravity.x*1 + ' m/s2';
-	document.getElementById('yAxis').innerHTML = e.accelerationIncludingGravity.y*1 + ' m/s2';
-	document.getElementById('zAxis').innerHTML = e.accelerationIncludingGravity.z*1 + ' m/s2';
+	document.getElementById('xAxis').innerHTML = Math.round(e.accelerationIncludingGravity.x*1) + ' m/s2';
+	document.getElementById('yAxis').innerHTML = Math.round(e.accelerationIncludingGravity.y*1) + ' m/s2';
+	document.getElementById('zAxis').innerHTML = Math.round(e.accelerationIncludingGravity.z*1) + ' m/s2';
 
  }
