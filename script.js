@@ -9,9 +9,9 @@ else {
 
 function accelerometerUpdate(e) {
 
-	x = Math.round((e.accelerationIncludingGravity.x*100)/100);
-	y = Math.round((e.accelerationIncludingGravity.y*100)/100);
-	z = Math.round((e.accelerationIncludingGravity.z*100)/100);
+	x = Math.round((e.accelerationIncludingGravity.x*100))/100;
+	y = Math.round((e.accelerationIncludingGravity.y*100))/100;
+	z = Math.round((e.accelerationIncludingGravity.z*100))/100;
 
 	document.getElementById('xAxis').innerHTML = x + ' m/s2';
 	document.getElementById('yAxis').innerHTML = y + ' m/s2';
