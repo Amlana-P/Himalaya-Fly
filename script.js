@@ -9,9 +9,12 @@ else {
 
 function accelerometerUpdate(e) {
 	DeviceMotionEvent.myInterval = 10000;
+	x = Math.round(e.accelerationIncludingGravity.x*1);
+	y = Math.round(e.accelerationIncludingGravity.y*1);
+	z = Math.round(e.accelerationIncludingGravity.z*1);
 
-	document.getElementById('xAxis').innerHTML = Math.round(e.accelerationIncludingGravity.x*1) + ' m/s2';
-	document.getElementById('yAxis').innerHTML = Math.round(e.accelerationIncludingGravity.y*1) + ' m/s2';
-	document.getElementById('zAxis').innerHTML = Math.round(e.accelerationIncludingGravity.z*1) + ' m/s2';
+	document.getElementById('xAxis').innerHTML = x + ' m/s2';
+	document.getElementById('yAxis').innerHTML = y + ' m/s2';
+	document.getElementById('zAxis').innerHTML = z + ' m/s2';
 
  }
