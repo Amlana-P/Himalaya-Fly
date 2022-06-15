@@ -8,7 +8,7 @@ else {
 }
 
 function accelerometerUpdate(e) {
-	DeviceMotionEvent.myInterval = 10000;
+
 	x = Math.round((e.accelerationIncludingGravity.x*100)/100);
 	y = Math.round((e.accelerationIncludingGravity.y*100)/100);
 	z = Math.round((e.accelerationIncludingGravity.z*100)/100);
