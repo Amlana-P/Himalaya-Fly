@@ -1,26 +1,21 @@
-// function handleMotionEvent(event) {
-
-//  xAxis = document.getElementById('xAxis').innerHTML = event.accelerationIncludingGravity.x;
-// 	yAxis = document.getElementById('yAxis').innerHTML = event.accelerationIncludingGravity.y;
-// 	zAxis = document.getElementById('zAxis').innerHTML = event.accelerationIncludingGravity.z;
-	
-// 	console.log("Amlana");
-
-// }
-
-// window.addEventListener("devicemotion", handleMotionEvent, true);
-function requestOrientationPermission(){
-	DeviceOrientationEvent.requestPermission()
-	.then(response => {
-		if (response == 'granted') {
-			window.addEventListener('devicemotion', (event) => {
-				 	// xAxis = document.getElementById('xAxis').innerHTML = event.accelerationIncludingGravity.x;
-					 
-				 	xAxis = document.getElementById('xAxis').innerHTML = "Amlana";
-					yAxis = document.getElementById('yAxis').innerHTML = event.accelerationIncludingGravity.y;
-					zAxis = document.getElementById('zAxis').innerHTML = event.accelerationIncludingGravity.z;
-			})
-		}
-	})
-	.catch(console.error)
+if (window.DeviceMotionEvent == undefined) {
+	//No accelerometer is present. Use buttons. 
+	alert("no accelerometer");
 }
+else {
+	alert("accelerometer found");
+	window.addEventListener("devicemotion", accelerometerUpdate, true);
+}
+
+function accelerometerUpdate(e) {
+	milliseconds = 1000;
+	myInterval = setInterval(getNewValues, milliseconds);
+		
+	function getNewValues(){
+		document.getElementById('xAxis').innerHTML = e.accelerationIncludingGravity.x*1;
+		document.getElementById('yAxis').innerHTML = e.accelerationIncludingGravity.y*1;
+		document.getElementById('zAxis').innerHTML = e.accelerationIncludingGravity.z*1;
+	}
+
+	// clearInterval(myInterval);
+ }
