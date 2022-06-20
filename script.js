@@ -17,9 +17,35 @@ function runGame(){
 
 		document.getElementById('xAxis').innerHTML = x + ' m/s2';
 		document.getElementById('yAxis').innerHTML = y + ' m/s2';
-		
 		document.getElementById('zAxis').innerHTML = z + ' m/s2';
 
+		xyz = [[]];
+		
+		const addElementFunction = setInterval(() => {
+			xyz.push([x, y, z]);
+		}, 50);
+
+		const stopAddElementFunction = setInterval(() => {
+			clearInterval(addElementFunction);
+		}, 1000);	
+
+		clearInterval(stopAddElementFunction);
+		
+		// Create an unordered list
+		var list = document.createElement('ul');
+
+		// Create a list item for each wizard
+		// and append it to the list
+		xyz.forEach(function (val) {
+			var li = document.createElement('li');
+			li.textContent = val.join();
+			list.appendChild(li);
+		});
+
+		var app = document.querySelector('#xyzVals');
+		app.appendChild(list);
+
+		console.log(xyz);
 	}
 
 }
