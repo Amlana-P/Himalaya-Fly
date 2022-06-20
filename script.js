@@ -21,15 +21,13 @@ function runGame(){
 
 		xyz = [[]];
 		
-		const addElementFunction = setInterval(() => {
+		addElementFunction = setInterval(() => {
 			xyz.push([x, y, z]);
 		}, 50);
 
-		const stopAddElementFunction = setInterval(() => {
+		setTimeout(() => {
 			clearInterval(addElementFunction);
 		}, 1000);	
-
-		clearInterval(stopAddElementFunction);
 		
 		// Create an unordered list
 		var list = document.createElement('ul');
