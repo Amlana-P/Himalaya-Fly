@@ -11,22 +11,24 @@ function runGame(){
 
 	function accelerometerUpdate(e) {
 
-		x = Math.round((e.accelerationIncludingGravity.x*100))/100;
-		y = Math.round((e.accelerationIncludingGravity.y*100))/100;
-		z = Math.round((e.accelerationIncludingGravity.z*100))/100;
+		X = Math.round((e.accelerationIncludingGravity.x*100))/100;
+		Y = Math.round((e.accelerationIncludingGravity.y*100))/100;
+		Z = Math.round((e.accelerationIncludingGravity.z*100))/100;
 
-		document.getElementById('xAxis').innerHTML = x + ' m/s2';
-		document.getElementById('yAxis').innerHTML = y + ' m/s2';
-		document.getElementById('zAxis').innerHTML = z + ' m/s2';
+		document.getElementById('xAxis').innerHTML = X + ' m/s2';
+		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
+		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		xyz = [[]];
+		xyz = [[1, 2, 3]];
 		
-		addElementFunction = setInterval(() => {
+		addElementFunction = setInterval((x, y, z) => {
 			xyz.push([x, y, z]);
-		}, 50);
+			console.log(x, y, z);
+		}, 50, X, Y, Z);
 
 		setTimeout(() => {
 			clearInterval(addElementFunction);
+			// console.log("Stop add element");
 		}, 1000);	
 		
 		// Create an unordered list
@@ -43,14 +45,14 @@ function runGame(){
 		var app = document.querySelector('#xyzVals');
 		app.appendChild(list);
 
-		console.log(xyz);
+		console.table(xyz);
 	}
 
 }
 
 async function runTimer(){
 
-	count = 3;
+	count = 1;
 	const timer = document.getElementById('timer');
 
 	const updateTimer = setInterval(() =>{
