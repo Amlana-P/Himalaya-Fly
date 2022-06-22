@@ -14,7 +14,7 @@ p{
     position: relative;
 }
 
-.button, .values {
+.button, .values, #xyzVals {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -26,4 +26,8 @@ p{
 
 .values {
     top: 8rem;
+}
+
+#xyzVals {
+    top: 12rem;
 }
