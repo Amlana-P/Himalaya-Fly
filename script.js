@@ -19,11 +19,11 @@ function runGame(){
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		xyz = [[1, 2, 3]];
-		
+		xyz = [[]];
+		i = 1;
 		addElementFunction = setInterval((x, y, z) => {
 			xyz.push([x, y, z]);
-			console.log(x, y, z);
+			// console.log(x, y, z);
 		}, 50, X, Y, Z);
 
 		setTimeout(() => {
@@ -31,24 +31,32 @@ function runGame(){
 			// console.log("Stop add element");
 		}, 1000);	
 		
+
+		myList = document.createElement('ul');
+		listItem = document.createElement('li');
+		myString = xyz[5].toString();
+		listItem.textContent = myString;
+		myList.appendChild(listItem);
+		app = document.querySelector('#xyzVals');
+		app.appendChild(myList);
 		// Create an unordered list
-		var list = document.createElement('ul');
+		// var list = document.createElement('ul');
 
 		// Create a list item for each wizard
 		// and append it to the list
-		xyz.forEach(function (val) {
-			var li = document.createElement('li');
-			li.textContent = val.join();
-			list.appendChild(li);
-		});
+		// xyz.forEach(function (val) {
+		// 	var li = document.createElement('li');
+		// 	li.textContent = val.join();
+		// 	list.appendChild(li);
+		// });
 
-		var app = document.querySelector('#xyzVals');
-		app.appendChild(list);
+		// var app = document.querySelector('#xyzVals');
+		// app.appendChild(list);
 
-		console.table(xyz);
+		// console.table(xyz);
 	}
 
-}
+};
 
 async function runTimer(){
 
@@ -66,4 +74,4 @@ async function runTimer(){
 		}
 	}, 1000);
 
-}	
+};
