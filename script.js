@@ -22,12 +22,10 @@ function runGame(){
 			runTimer()
 		}
 			
-		else{
-			dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
-			var msg = dist > 0.01 ? dist>0.03 ? "Damn Dude!" : "Woah!" : "Meeh T_T";
-			var notification = new Notification(msg, {body: "You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m"});
-			setTimeout(function() {notification.close()}, 5000);
-		}
+		dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
+		var msg = dist > 0.01 ? dist>0.03 ? "Damn Dude!" : "Woah!" : "Meeh T_T";
+		var notification = new Notification(msg, {body: "You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m"});
+		setTimeout(function() {notification.close()}, 5000);
 		
 	}
 
