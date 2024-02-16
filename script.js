@@ -20,7 +20,7 @@ function runGame(){
 
 		// calculating distance
 		dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
-		alert("You threw your phone an approx distance of " + Math.round(dist) + " m");
+		alert("You threw your phone an approx distance of " + Math.round(dist)/100 + " m");
 		window.location.reload();
 	}
 
