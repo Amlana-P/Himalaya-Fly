@@ -7,6 +7,10 @@ function runGame(){
 		Y = Math.round(e.accelerationIncludingGravity.y*100)/100;
 		Z = Math.round(e.accelerationIncludingGravity.z*100)/100;
 
+		X = (X>0) ? X-0.2 : X+0.2;
+		Y = (Y>0) ? Y-0.2 : Y+0.2;
+		Z = (Z>0) ? Z-0.2 : Z+0.2; 
+
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
@@ -41,6 +45,6 @@ async function runTimer(){
 			clearInterval(updateTimer);
 			runGame();
 		}
-	}, 1000);
+	}, 2000);
 
 };
