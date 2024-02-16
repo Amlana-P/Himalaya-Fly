@@ -17,9 +17,9 @@ function runGame(){
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		if(X>Z || Y>Z){
+		if(X>9.0 || Y>9.0){
 			alert("Please hold your phone in a horizontaly manner, facing upwards.");
-			runTimer()
+			runTimer();
 		}
 			
 		function getResult(){
@@ -27,15 +27,14 @@ function runGame(){
 			var msg = dist > 0.01 ? dist>0.03 ? "Damn Dude!" : "Woah!" : "Meeh T_T";
 			var notification = new Notification(msg, {body: "You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m"});
 			setTimeout(function() {notification.close()}, 5000);
-		}
-
-		getResult();
+		}	
 		
+		getResult();
 	}
 
 };
 
-async function runTimer(){
+function runTimer(){
 
 	if (window.DeviceMotionEvent == null) {
 		//No accelerometer is present. 
