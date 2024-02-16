@@ -12,16 +12,18 @@ function runGame(){
 
 		X = X>0 ? X-0.3 : X+0.2;
 		Y = Y>0 ? Y-0.3 : Y;
-		Z = Z>0 ? Z+0.3 : Z; 
 
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		// calculating distance
-		dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
+		if(X>Z || Y>Z)
+			alert("Please hold your phone in a horizontaly manner, facing upwards.");
+		else{
+			dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
 		alert("You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m");
-		location.reload();
+		}
+		
 	}
 
 };
