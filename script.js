@@ -18,14 +18,11 @@ async function runTimer(){
 
 	if (window.DeviceMotionEvent == null) {
 		//No accelerometer is present. 
-		console.log(window.DeviceMotionEvent);
 		alert("No accelerometer found. You can't play this game.");
 	}
 
 	count = -4;
-	const timer = document.getElementById('timer');
 	const updateTimer = setInterval(() =>{
-		timer.innerHTML = count;
 		count++;
 
 		switch(count){
