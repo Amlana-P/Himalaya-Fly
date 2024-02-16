@@ -7,8 +7,9 @@ function runGame(){
 		Y = Math.round(e.accelerationIncludingGravity.y*100)/100;
 		Z = Math.round(e.accelerationIncludingGravity.z*100)/100;
 
-		X = (X>0) ? X-0.2 : X+0.2;
-		Y = (Y>0) ? Y-0.3 : Y+0.3; 
+		X = X>0 ? X-0.3 : X+0.2;
+		Y = Y>0 ? Y-0.3 : Y;
+		Z = Z>0 ? Z+0.3 : Z; 
 
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
