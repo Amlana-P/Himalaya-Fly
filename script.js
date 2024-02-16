@@ -10,25 +10,6 @@ function runGame(){
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
-
-		xyz = [[]];
-		i = 1;
-		addElementFunction = setInterval((x, y, z) => {
-			xyz.push([x, y, z]);
-		}, 50, X, Y, Z);
-
-		setTimeout(() => {
-			clearInterval(addElementFunction);
-		}, 1000);	
-		
-
-		myList = document.createElement('ul');
-		listItem = document.createElement('li');
-		myString = xyz[5].toString();
-		listItem.textContent = myString;
-		myList.appendChild(listItem);
-		app = document.querySelector('#xyzVals');
-		app.appendChild(myList);
 	}
 
 };
@@ -61,7 +42,6 @@ async function runTimer(){
 
 		if(count == 0){
 			clearInterval(updateTimer);
-			timer.innerHTML = "Shoot!";
 			runGame();
 		}
 	}, 1000);
