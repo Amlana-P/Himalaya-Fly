@@ -1,8 +1,11 @@
 function runGame(){
 	window.addEventListener("devicemotion", accelerometerUpdate, true);
 
+	function calculateNetAcceleration(x, y, z){
+		return Math.sqrt(x*x+y*y+z*z);
+	}
+
 	function accelerometerUpdate(e) {
-		console.log(e);
 		X = Math.round(e.accelerationIncludingGravity.x*100)/100;
 		Y = Math.round(e.accelerationIncludingGravity.y*100)/100;
 		Z = Math.round(e.accelerationIncludingGravity.z*100)/100;
@@ -14,6 +17,10 @@ function runGame(){
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
+
+		// calculating distance
+		dist = 0.125*calculateNetAcceleration(X, Y, Z);
+		alert("You threw your phone an approx distance of {}", dist);
 	}
 
 };
@@ -45,6 +52,6 @@ async function runTimer(){
 			clearInterval(updateTimer);
 			runGame();
 		}
-	}, 2000);
+	}, 1500);
 
 };
