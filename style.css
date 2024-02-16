@@ -26,6 +26,7 @@ p{
 
 .values {
     top: 8rem;
+    transition: 1s;
 }
 
 #xyzVals {
