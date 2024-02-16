@@ -17,8 +17,11 @@ function runGame(){
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		if(X>Z || Y>Z)
+		if(X>Z || Y>Z){
 			alert("Please hold your phone in a horizontaly manner, facing upwards.");
+			runTimer()
+		}
+			
 		else{
 			dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
 			var msg = dist > 0.01 ? dist>0.03 ? "Damn Dude!" : "Woah!" : "Meeh T_T";
