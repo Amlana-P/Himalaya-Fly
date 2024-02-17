@@ -12,11 +12,13 @@ function runGame(){
 
 		X = X>0 ? X-0.3 : X+0.2;
 		Y = Y>0 ? Y-0.3 : Y;
-		Z = Z>0 ? Z+0.3 : Z; 
 
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
+
+		if(X>=9 || Y>=9)
+			alert("Please hold your device oriented horizontally and facing upwards.")
 
 		// calculating distance
 		dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
