@@ -1,76 +1,57 @@
 function displayResult(dist) {
-  var msg =
-    "You threw your phone an approx distance of " +
-    Math.round(dist)+" m";
-	alert(msg);
-}
-
-function runGame() {
-  if (window.DeviceMotionEvent == null) {
-    alert("No accelerometer found. You can't play this game.");
-    return;
+	document.getElementById("timer").textContent =
+	  "You simulated a throw of approximately " + Math.round(dist) + " m";
   }
-
-  let listenerAdded = false;
-
-  function calculateNetAcceleration(x, y, z) {
-    return Math.sqrt(x * x + y * y + z * z);
+  
+  function runGame() {
+	if (window.DeviceMotionEvent == null) {
+	  alert("No accelerometer found. You can't play this game.");
+	  return;
+	}
+  
+	let hasResultBeenDisplayed = false;
+  
+	function calculateNetAcceleration(x, y, z) {
+	  return Math.sqrt(x * x + y * y + z * z);
+	}
+  
+	function accelerometerUpdate(e) {
+	  let X = Math.round(e.accelerationIncludingGravity.x);
+	  let Y = Math.round(e.accelerationIncludingGravity.y);
+	  let Z = Math.round(e.accelerationIncludingGravity.z) - 10;
+  
+	  document.getElementById("xAxis").textContent = "X: " + X + " m/s²";
+	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
+	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
+  
+	  if (!hasResultBeenDisplayed && (Math.abs(X) >= 6 || Math.abs(Y) >= 6)) {
+		const dist = calculateNetAcceleration(X, Y, Z);
+		displayResult(dist);
+		window.removeEventListener("devicemotion", accelerometerUpdate, true);
+		hasResultBeenDisplayed = true;
+	  }
+	}
+  
+	window.addEventListener("devicemotion", accelerometerUpdate, true);
   }
-
-  function accelerometerUpdate(e) {
-    let X = Math.round(e.accelerationIncludingGravity.x);
-    let Y = Math.round(e.accelerationIncludingGravity.y);
-    let Z = Math.round(e.accelerationIncludingGravity.z)-10;
-
-    document.getElementById("xAxis").textContent = X + " m/s2";
-    document.getElementById("yAxis").textContent = Y + " m/s2";
-    document.getElementById("zAxis").textContent = Z + " m/s2";
-
-    if (Math.abs(X) >= 6 || Math.abs(Y) >= 6) {
-      callAlert(
-        "Please hold your device oriented horizontally and facing upwards."
-      );
-    }
-
-    const dist = calculateNetAcceleration(X, Y, Z);
-
-    if (!listenerAdded) {
-      displayResult(dist);
-      window.removeEventListener("devicemotion", accelerometerUpdate, true);
-      listenerAdded = true; 
-    }
-  }
-
-  window.addEventListener("devicemotion", accelerometerUpdate, true);
-}
-
-function runTimer() {
-  if (window.DeviceMotionEvent == null) {
-    alert("No accelerometer found. You can't play this game.");
-    return;
-  }
-
-  let count = -4;
-  const updateTimer = setInterval(() => {
-    count++;
-
-    switch (count) {
-      case -3:
-        alert("Get Ready...");
-        break;
-      case -2:
-        alert("Set...");
-        break;
-      case -1:
-        alert("Throw!");
-        break;
-      case 0:
-        clearInterval(updateTimer);
-        runGame();
-        break;
-      default:
-        // No default action needed
-        break;
-    }
-  }, 1500);
-}
+  
+  function runTimer() {
+	if (window.DeviceMotionEvent == null) {
+	  alert("No accelerometer found. You can't play this game.");
+	  return;
+	}
+  
+	let count = -3;
+	document.getElementById("timer").textContent = "Get Ready...";
+	const updateTimer = setInterval(() => {
+	  if (count === -2) {
+		document.getElementById("timer").textContent = "Set...";
+	  } else if (count === -1) {
+		document.getElementById("timer").textContent = "Simulate a Throw!";
+	  } else if (count === 0) {
+		clearInterval(updateTimer);
+		runGame();
+	  }
+	  count++;
+	}, 1500);
+  }  
