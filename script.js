@@ -18,9 +18,9 @@ function runGame() {
   }
 
   function accelerometerUpdate(e) {
-    const X = Math.round(e.accelerationIncludingGravity.x)/100;
-    const Y = Math.round(e.accelerationIncludingGravity.y)/100;
-    const Z = Math.round(e.accelerationIncludingGravity.z)/100;
+    const X = Math.round(e.accelerationIncludingGravity.x);
+    const Y = Math.round(e.accelerationIncludingGravity.y);
+    const Z = Math.round(e.accelerationIncludingGravity.z);
 
     document.getElementById("xAxis").textContent = X + " m/s2";
     document.getElementById("yAxis").textContent = Y + " m/s2";
@@ -32,7 +32,7 @@ function runGame() {
       );
     }
 
-    const dist = calculateNetAcceleration(X-0.5, Y-0.8, Z-9.6);
+    const dist = calculateNetAcceleration(X-0.51, Y-0.8, Z-9.7);
 
     // Consider removing the listener after getting a significant motion
     // to avoid multiple alerts and calculations
