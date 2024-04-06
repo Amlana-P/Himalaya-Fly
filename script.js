@@ -20,7 +20,7 @@ function runGame() {
   function accelerometerUpdate(e) {
     let X = Math.round(e.accelerationIncludingGravity.x);
     let Y = Math.round(e.accelerationIncludingGravity.y);
-    let Z = Math.round(e.accelerationIncludingGravity.z);
+    let Z = Math.round(e.accelerationIncludingGravity.z)-10;
 
     document.getElementById("xAxis").textContent = X + " m/s2";
     document.getElementById("yAxis").textContent = Y + " m/s2";
@@ -32,7 +32,7 @@ function runGame() {
       );
     }
 
-    const dist = calculateNetAcceleration(X, Y, Z-10);
+    const dist = calculateNetAcceleration(X, Y, Z);
 
     if (!listenerAdded) {
       displayResult(dist);
