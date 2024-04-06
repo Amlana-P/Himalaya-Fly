@@ -12,8 +12,12 @@ function displayResult(dist) {
 	let hasResultBeenDisplayed = false;
   
 	function accelerometerUpdate(e) {
+	  let X = Math.round(e.accelerationIncludingGravity.x);
+	  let Y = Math.round(e.accelerationIncludingGravity.y);
 	  let Z = Math.round(e.accelerationIncludingGravity.z) - 9.8;
-
+  
+	  document.getElementById("xAxis").textContent = "X: " + X + " m/s²";
+	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
 	  if (!hasResultBeenDisplayed && (Math.abs(X) <= 3 && Math.abs(Y) <= 3)) {
