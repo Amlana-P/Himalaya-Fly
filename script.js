@@ -11,24 +11,18 @@ function displayResult(dist) {
   
 	let hasResultBeenDisplayed = false;
   
-	function calculateNetAcceleration(x, y, z) {
-	  return Math.sqrt(x * x + y * y + z * z);
-	}
-  
 	function accelerometerUpdate(e) {
-	  let X = Math.round(e.accelerationIncludingGravity.x);
-	  let Y = Math.round(e.accelerationIncludingGravity.y);
 	  let Z = Math.round(e.accelerationIncludingGravity.z) - 9.8;
-  
-	  document.getElementById("xAxis").textContent = "X: " + X + " m/s²";
-	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
+
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
-	  if (!hasResultBeenDisplayed && (Math.abs(X) >= 6 || Math.abs(Y) >= 6)) {
-		const dist = 0.125*calculateNetAcceleration(X, Y, Z);
+	  if (!hasResultBeenDisplayed && (Math.abs(X) <= 3 && Math.abs(Y) <= 3)) {
+		const dist = 0.125*Z*0.8;
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
 		hasResultBeenDisplayed = true;
+	  } else {
+		alert("Please hold your device in upright position.");
 	  }
 	}
   
