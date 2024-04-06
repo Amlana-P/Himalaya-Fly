@@ -1,6 +1,6 @@
 function displayResult(dist) {
 	document.getElementById("timer").textContent =
-	  "You simulated a throw of approximately " + Math.round(dist) + " m";
+	  "You simulated a throw of approximately " + Math.round(dist*100)/100 + " m";
   }
   
   function runGame() {
@@ -25,9 +25,6 @@ function displayResult(dist) {
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
 		hasResultBeenDisplayed = true;
-	  } else {
-		alert("Please hold your device in upright poosition.");
-		document.getElementById("timer").textContent = "Please Retry!";
 	  }
 	}
   
