@@ -20,13 +20,13 @@ function displayResult(dist) {
 	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
-	  if (!hasResultBeenDisplayed && (Math.abs(X) <= 5 && Math.abs(Y) <= 5)) {
+	  if (!hasResultBeenDisplayed && (Math.abs(X) >= 6 || Math.abs(Y) >= 6)) {
 		const dist = 0.125*Z*0.8;
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
 		hasResultBeenDisplayed = true;
 	  } else {
-		alert("Please hold your device in upright position.");
+		alert("Please hold your device in upright poosition.");
 	  }
 	}
   
