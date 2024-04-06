@@ -32,7 +32,7 @@ function runGame() {
       );
     }
 
-    const dist = calculateNetAcceleration(X, Y, Z);
+    const dist = calculateNetAcceleration(X, Y, Z-10);
 
     if (!listenerAdded) {
       displayResult(dist);
