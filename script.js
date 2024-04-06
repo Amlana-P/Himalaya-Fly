@@ -18,14 +18,14 @@ function displayResult(dist) {
 	function accelerometerUpdate(e) {
 	  let X = Math.round(e.accelerationIncludingGravity.x);
 	  let Y = Math.round(e.accelerationIncludingGravity.y);
-	  let Z = Math.round(e.accelerationIncludingGravity.z) - 10;
+	  let Z = Math.round(e.accelerationIncludingGravity.z) - 9.8;
   
 	  document.getElementById("xAxis").textContent = "X: " + X + " m/s²";
 	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
 	  if (!hasResultBeenDisplayed && (Math.abs(X) >= 6 || Math.abs(Y) >= 6)) {
-		const dist = calculateNetAcceleration(X, Y, Z);
+		const dist = 0.125*calculateNetAcceleration(X, Y, Z);
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
 		hasResultBeenDisplayed = true;
