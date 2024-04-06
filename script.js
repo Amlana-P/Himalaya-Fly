@@ -34,12 +34,10 @@ function runGame() {
 
     const dist = calculateNetAcceleration(X-0.51, Y-0.8, Z-9.7);
 
-    // Consider removing the listener after getting a significant motion
-    // to avoid multiple alerts and calculations
     if (!listenerAdded) {
       displayResult(dist);
       window.removeEventListener("devicemotion", accelerometerUpdate, true);
-      listenerAdded = true; // Ensure we don't try to remove the listener again unnecessarily
+      listenerAdded = true; 
     }
   }
 
