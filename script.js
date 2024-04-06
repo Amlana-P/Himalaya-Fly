@@ -21,12 +21,13 @@ function displayResult(dist) {
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
 	  if (!hasResultBeenDisplayed && (Math.abs(X) >= 6 || Math.abs(Y) >= 6)) {
-		const dist = 0.125*Z*0.8;
+		const dist = 0.125*Z;
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
 		hasResultBeenDisplayed = true;
 	  } else {
 		alert("Please hold your device in upright poosition.");
+		document.getElementById("timer").textContent = "Please Retry!";
 	  }
 	}
   
