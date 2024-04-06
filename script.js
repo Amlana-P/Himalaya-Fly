@@ -18,9 +18,9 @@ function runGame() {
   }
 
   function accelerometerUpdate(e) {
-    const X = Math.round(e.accelerationIncludingGravity.x);
-    const Y = Math.round(e.accelerationIncludingGravity.y);
-    const Z = Math.round(e.accelerationIncludingGravity.z);
+    let X = Math.round(e.accelerationIncludingGravity.x);
+    let Y = Math.round(e.accelerationIncludingGravity.y);
+    let Z = Math.round(e.accelerationIncludingGravity.z);
 
     document.getElementById("xAxis").textContent = X + " m/s2";
     document.getElementById("yAxis").textContent = Y + " m/s2";
