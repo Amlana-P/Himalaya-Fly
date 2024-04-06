@@ -37,7 +37,7 @@ function runGame() {
       );
     }
 
-    const dist = calculateNetAcceleration(X, Y, Z - 9.7);
+    const dist = calculateNetAcceleration(X-0.5, Y-0.8, Z-9.6);
 
     // Consider removing the listener after getting a significant motion
     // to avoid multiple alerts and calculations
