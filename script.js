@@ -1,13 +1,8 @@
-function callAlert(msg) {
-  alert(msg);
-}
-
 function displayResult(dist) {
   var msg =
     "You threw your phone an approx distance of " +
-    Math.round(dist * 100) / 100 +
-    " m";
-  callAlert(msg);
+    Math.round(dist)+" m";
+	alert(msg);
 }
 
 function runGame() {
