@@ -1,4 +1,15 @@
+function callAlert(msg){
+	alert(msg);
+}
+
+function displayResult(dist){
+	var msg = "You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m";
+	callAlert(msg);
+}
+
 function runGame(){
+	var dist = 0;
+
 	window.addEventListener("devicemotion", accelerometerUpdate, true);
 
 	function calculateNetAcceleration(x, y, z){
@@ -10,24 +21,20 @@ function runGame(){
 		Y = Math.round(e.accelerationIncludingGravity.y*100)/100;
 		Z = Math.round(e.accelerationIncludingGravity.z*100)/100;
 
-		X = X>0 ? X-0.3 : X+0.2;
-		Y = Y>0 ? Y-0.3 : Y;
-
 		document.getElementById('xAxis').innerHTML = X + ' m/s2';
 		document.getElementById('yAxis').innerHTML = Y + ' m/s2';
 		document.getElementById('zAxis').innerHTML = Z + ' m/s2';
 
-		if(X>=9 || Y>=9)
+		if(Math.abs(X)>=6 || Math.abs(Y)>=6)
 			alert("Please hold your device oriented horizontally and facing upwards.")
 
-		// calculating distance
-		dist = 0.125*calculateNetAcceleration(X, Y, Z-9.7);
-		alert("You threw your phone an approx distance of " + Math.round(dist*100)/100 + " m");
-	}
+		dist = calculateNetAcceleration(X, Y, Z-9.7);
 
+		displayResult(dist);
+	}
 };
 
-async function runTimer(){
+function runTimer(){
 
 	if (window.DeviceMotionEvent == null) {
 		//No accelerometer is present. 
