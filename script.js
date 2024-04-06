@@ -20,7 +20,7 @@ function displayResult(dist) {
 	  document.getElementById("yAxis").textContent = "Y: " + Y + " m/s²";
 	  document.getElementById("zAxis").textContent = "Z: " + Z + " m/s²";
   
-	  if (!hasResultBeenDisplayed && (Math.abs(X) <= 3 && Math.abs(Y) <= 3)) {
+	  if (!hasResultBeenDisplayed && (Math.abs(X) <= 5 && Math.abs(Y) <= 5)) {
 		const dist = 0.125*Z*0.8;
 		displayResult(dist);
 		window.removeEventListener("devicemotion", accelerometerUpdate, true);
