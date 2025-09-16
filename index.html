@@ -1,25 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
-<title>Project Himalaya</title>
-<style>
-  body { text-align: center; margin-top: 50px; }
-  #info { margin: 20px; }
-</style>
+  <meta charset="UTF-8">
+  <title>Shake Your Phone Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to top, #6dd5fa, #2980b9);
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 5px; }
+    .disclaimer {
+      font-size: 14px;
+      background: rgba(255, 0, 0, 0.2);
+      border: 1px solid red;
+      padding: 8px;
+      margin: 10px auto;
+      border-radius: 6px;
+      max-width: 400px;
+    }
+    button {
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #27ae60;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled { background: gray; cursor: not-allowed; }
+    #leaderboard {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .entry {
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 0;
+    }
+  </style>
 </head>
 <body>
-<h1>Project Himalaya Game</h1>
-<p>Do not actually throw your device. Just simulate the motion!</p>
-<div id="info">
-  <p id="timer">Ready?</p>
-  <p id="xAxis">X: 0 m/s²</p>
-  <p id="yAxis">Y: 0 m/s²</p>
-  <p id="zAxis">Z: 0 m/s²</p>
-  <button onclick="runTimer()">Start Game</button>
-</div>
-<script src="script.js"></script>
+  <h1>📱 Shake Your Phone Game</h1>
+  <div class="disclaimer">
+    ⚠️ Disclaimer: This game is for fun!  
+    Please <b>do not throw your phone</b>. Shake it safely in your hand to score.
+  </div>
+  <p>Shake your phone as hard as you can. The harder the shake, the higher your score!</p>
+
+  <input type="text" id="playerName" placeholder="Enter your name" />
+  <br>
+  <button id="startBtn">Start Shake</button>
+  <button id="stopBtn" disabled>Stop</button>
+
+  <h2 id="heightDisplay">Score: 0 points</h2>
+
+  <div id="leaderboard">
+    <h3>🏆 Leaderboard</h3>
+    <div id="entries"></div>
+  </div>
+
+  <script>
+    let maxShake = 0;
+    let listening = false;
+    let locationData = "Unknown";
+
+    // Request location permission
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          locationData = `${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+        },
+        err => console.log("Location access denied")
+      );
+    }
+
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const heightDisplay = document.getElementById("heightDisplay");
+    const entriesDiv = document.getElementById("entries");
+
+    // Capture motion events
+    function handleMotion(event) {
+      if (!listening) return;
+      let accZ = event.accelerationIncludingGravity.z || 0;
+      let accY = event.accelerationIncludingGravity.y || 0;
+      let accX = event.accelerationIncludingGravity.x || 0;
+
+      // Approximate net acceleration magnitude
+      let netAcc = Math.sqrt(accX*accX + accY*accY + accZ*accZ);
+
+      if (netAcc > maxShake) {
+        maxShake = netAcc;
+      }
+    }
+
+    startBtn.onclick = () => {
+      if (typeof DeviceMotionEvent.requestPermission === "function") {
+        // iOS requires explicit permission
+        DeviceMotionEvent.requestPermission().then(response => {
+          if (response === "granted") {
+            window.addEventListener("devicemotion", handleMotion);
+          }
+        });
+      } else {
+        window.addEventListener("devicemotion", handleMotion);
+      }
+      listening = true;
+      maxShake = 0;
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    };
+
+    stopBtn.onclick = () => {
+      listening = false;
+      stopBtn.disabled = true;
+      startBtn.disabled = false;
+
+      // Use shake intensity as score
+      let score = Math.round(maxShake * 10);
+      heightDisplay.innerText = `Score: ${score} points`;
+
+      let player = document.getElementById("playerName").value || "Anonymous";
+      saveScore(player, score, locationData);
+    };
+
+    function saveScore(name, score, location) {
+      let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+      scores.push({ name, score, location });
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem("leaderboard", JSON.stringify(scores));
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+      entriesDiv.innerHTML = "";
+      scores.forEach((s, i) => {
+        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.score} points (${s.location})</div>`;
+      });
+    }
+
+    renderLeaderboard();
+  </script>
 </body>
 </html>
