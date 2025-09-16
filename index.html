@@ -78,11 +78,6 @@
       border-radius: 6px;
       animation: fadeInUp 0.5s ease;
     }
-    #clearBtn {
-      background: linear-gradient(135deg, #e74c3c, #c0392b);
-      width: 100%;
-      margin-top: 10px;
-    }
 
     /* Popup message after throw */
     #resultMessage {
@@ -162,7 +157,6 @@
   <div id="leaderboard">
     <h3>🏆 Leaderboard</h3>
     <div id="entries"></div>
-    <button id="clearBtn">Clear Leaderboard</button>
   </div>
 
   <!-- Subtle popup result message -->
@@ -187,7 +181,6 @@
     let velocity = 0;
     let lastTimestamp = null;
     let listening = false;
-    let locationData = "Unknown";
     let baseline = 0; // calibration baseline
 
     const startBtn = document.getElementById("startBtn");
@@ -198,7 +191,6 @@
     const disclaimerModal = document.getElementById("disclaimerModal");
     const acceptBtn = document.getElementById("acceptBtn");
     const resultMessage = document.getElementById("resultMessage");
-    const clearBtn = document.getElementById("clearBtn");
 
     // Unlock game after accepting disclaimer
     acceptBtn.onclick = () => {
@@ -209,7 +201,6 @@
     };
 
     function calibrate() {
-      // Take a short sample to get baseline
       let samples = [];
       let handler = (event) => {
         samples.push(event.accelerationIncludingGravity.z);
@@ -256,21 +247,20 @@
       startBtn.disabled = false;
 
       let g = 9.81;
-      // apply threshold to ignore fake throws
       if (Math.abs(velocity) < 1) velocity = 0;
 
       let height = Math.max(0, (velocity * velocity) / (2 * g));
       heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
 
       let player = playerNameInput.value || "Anonymous";
-      saveScore(player, height, locationData);
+      saveScore(player, height);
 
       showResultMessage(height.toFixed(2));
     };
 
-    function saveScore(name, height, location) {
+    function saveScore(name, height) {
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-      scores.push({ name, height: height.toFixed(2), location });
+      scores.push({ name, height: height.toFixed(2) });
       scores.sort((a, b) => b.height - a.height);
       scores = scores.slice(0, 10); // keep only top 10
       localStorage.setItem("leaderboard", JSON.stringify(scores));
@@ -281,7 +271,7 @@
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
       entriesDiv.innerHTML = "";
       scores.forEach((s, i) => {
-        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m</div>`;
+        entriesDiv.innerHTML = entriesDiv.innerHTML + `<div class="entry">${i+1}. ${s.name} - ${s.height} m</div>`;
       });
     }
 
@@ -292,11 +282,6 @@
         resultMessage.classList.remove("show");
       }, 4000);
     }
-
-    clearBtn.onclick = () => {
-      localStorage.removeItem("leaderboard");
-      renderLeaderboard();
-    };
 
     renderLeaderboard();
   </script>
