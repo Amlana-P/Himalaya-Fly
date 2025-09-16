@@ -5,78 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Himalaya Fly Game</title>
 <style>
-  body { margin:0; font-family:sans-serif; text-align:center;
-         background:linear-gradient(to top,#6dd5fa,#2980b9); color:white;}
-  header { display:flex; justify-content:space-between; align-items:center;
-           padding:12px 16px; background: rgba(0,0,0,0.3);}
-  .hamburger { cursor:pointer; font-size:24px; }
-  #leaderboardMenu { position:fixed; top:0; left:-300px; width:280px; height:100%;
-    background: rgba(0,0,0,0.95); padding:20px; overflow-y:auto;
-    transition:left 0.3s ease; z-index:999;}
-  #leaderboardMenu.open { left:0;}
-  #leaderboardMenu h3 { margin-top:0; color:#f1c40f;}
-  .entry { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.2);}
-  h1{margin-top:20px;font-size:28px;}
-  input{margin-top:15px;padding:10px;border-radius:6px;border:none;width:70%;max-width:300px;}
-  button{padding:12px 20px;margin:12px 6px;border:none;border-radius:8px;
-          background:#27ae60;color:white;font-size:16px;cursor:pointer;}
-  button:hover{transform:scale(1.05);background:#2ecc71;}
-  #heightDisplay{font-size:22px;margin-top:25px;transition:all 0.3s ease;}
-  #disclaimerModal{position:fixed;top:0;left:0;width:100%;height:100%;
-                   background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;}
-  #disclaimerBox{background:#fff;color:black;padding:20px;border-radius:10px;max-width:400px;text-align:center;}
-  #finalScoreModal{position:fixed;top:0;left:0;width:100%;height:100%;
-                   background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1001;}
-  #finalBox{background:#fff;color:black;padding:20px;border-radius:10px;max-width:350px;text-align:center;}
-  @media(max-width:600px){h1{font-size:22px;} button{width:80%;}}
+    body {
+        margin: 0; font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom, #87ceeb, #ffffff);
+        text-align: center;
+        overflow-x: hidden;
+    }
+    header {
+        background: #2c3e50; color: white; padding: 15px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .hamburger { cursor: pointer; font-size: 26px; }
+    #leaderboardMenu {
+        position: fixed; top: 0; right: -300px; width: 300px; height: 100%;
+        background: #34495e; color: white; overflow-y: auto;
+        transition: right 0.3s ease; padding: 20px;
+        z-index: 2000;
+    }
+    #leaderboardMenu.open { right: 0; }
+    #leaderboardMenu h2 { margin-top: 0; }
+    #leaderboardList { list-style: none; padding: 0; }
+    #leaderboardList li {
+        background: rgba(255,255,255,0.1); margin: 5px 0;
+        padding: 8px; border-radius: 5px;
+    }
+    #gameArea { margin: 40px auto; max-width: 500px; }
+    button {
+        background: #27ae60; border: none; color: white;
+        padding: 12px 20px; margin: 10px; border-radius: 6px;
+        font-size: 16px; cursor: pointer; transition: 0.3s;
+    }
+    button:hover { background: #2ecc71; }
+    #heightDisplay { font-size: 32px; margin: 20px; font-weight: bold; }
+    /* Modal */
+    .modal {
+        display: none; position: fixed; z-index: 3000;
+        left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6); text-align: center;
+    }
+    .modal-content {
+        background: #fff; margin: 15% auto; padding: 20px;
+        border-radius: 10px; width: 80%; max-width: 400px;
+    }
+    .modal button { margin-top: 15px; }
+    @media (max-width: 600px) {
+        #leaderboardMenu { width: 80%; }
+    }
 </style>
 </head>
 <body>
-
 <header>
-  <div>🗻 Himalaya Fly</div>
-  <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <h1>Himalaya Fly Game</h1>
+    <div class="hamburger">☰</div>
 </header>
 
+<!-- Sidebar Leaderboard -->
 <div id="leaderboardMenu">
-  <h3>🏆 Global Leaderboard</h3>
-  <div id="entries"></div>
+    <h2>🏆 Leaderboard</h2>
+    <ul id="leaderboardList"></ul>
 </div>
 
-<h1>Himalaya Fly Game</h1>
-<p>Throw your phone (⚠️ carefully). The throw will automatically stop after 3 seconds.</p>
-
-<input type="text" id="playerName" placeholder="Enter your name" />
-<br>
-<button id="startBtn">Start Throw</button>
-<button id="endBtn" style="display:none;">End Throw Early</button>
-
-<h2 id="heightDisplay">Height: 0 m</h2>
-
-<div id="disclaimerModal">
-  <div id="disclaimerBox">
-    <h2>⚠️ Disclaimer</h2>
-    <p>This game simulates phone throwing using sensors. Throwing your phone is dangerous.  
-      Play at your own risk. The developer is not liable for any damage or injury.</p>
-    <button onclick="acceptDisclaimer()">I Accept</button>
-  </div>
+<div id="gameArea">
+    <p><strong>Throw will auto-stop in 3 seconds!</strong></p>
+    <button onclick="startListening()">Start Throw</button>
+    <div id="heightDisplay">Height: 0 m</div>
 </div>
 
-<div id="finalScoreModal">
-  <div id="finalBox">
-    <h2 id="finalMessage"></h2>
-    <button onclick="submitScore()">Submit</button>
-    <button onclick="tryAgain()">Try Again</button>
-  </div>
+<!-- Final Score Modal -->
+<div id="finalModal" class="modal">
+    <div class="modal-content">
+        <p id="finalMessage"></p>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <br>
+        <button onclick="submitScore()">Submit Score</button>
+        <button onclick="closeModal()">Try Again</button>
+    </div>
 </div>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
-  // Firebase config - replace with your own
-  const firebaseConfig = {
+/* 🔥 Replace with your Firebase config */
+const firebaseConfig = {
     apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
     authDomain: "himalayafly.firebaseapp.com",
     databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -86,104 +97,113 @@
     appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00",
     measurementId: "G-T58K1DT564"
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  let maxHeight=0, throwing=false, animationInterval, lastY=null, velocity=0, autoStopTimeout;
+/* Game Vars */
+let throwing = false, maxHeight = 0, lastY = null, velocity = 0;
+let animationInterval;
 
-  const startBtn = document.getElementById("startBtn");
-  const endBtn = document.getElementById("endBtn");
+function handleMotion(event){
+    if (!throwing) return;
+    let y = event.accelerationIncludingGravity.y || 0;
+    if (lastY !== null){
+        velocity += (y - lastY) * 0.1;
+        maxHeight += velocity * 0.05;
+        if (maxHeight < 0) maxHeight = 0;
+        document.getElementById("heightDisplay").innerText = "Height: " + Math.round(maxHeight) + " m";
+    }
+    lastY = y;
+}
 
-  function toggleMenu(){document.getElementById("leaderboardMenu").classList.toggle("open");}
-  function acceptDisclaimer(){document.getElementById("disclaimerModal").style.display='none';}
-
-  startBtn.addEventListener("click", startThrow);
-  endBtn.addEventListener("click", stopThrow);
-
-  function startThrow(){
-    if(typeof DeviceMotionEvent.requestPermission==='function'){
-      DeviceMotionEvent.requestPermission().then(res=>{if(res==='granted') startListening();});
-    }else startListening();
-  }
-
-  function startListening(){
-    throwing=true; maxHeight=0; lastY=null; velocity=0;
-    document.getElementById("heightDisplay").innerText="Height: 0 m";
-
+function startListening(){
+    throwing = true;
+    maxHeight = 0; lastY = null; velocity = 0;
+    document.getElementById("heightDisplay").innerText = "Height: 0 m";
     window.addEventListener("devicemotion", handleMotion);
 
-    // show end button for early stop
-    endBtn.style.display='inline-block';
-    endBtn.disabled=false;
+    setTimeout(stopThrow, 3000); // auto stop after 3 sec
+}
 
-    // automatic stop after 3 seconds
-    autoStopTimeout = setTimeout(stopThrow,3000);
-  }
-
-  function handleMotion(e){
-    if(!throwing) return;
-    let accY=e.accelerationIncludingGravity.y||0;
-    if(lastY===null){lastY=accY; return;}
-    let delta=accY-lastY;
-    velocity+=delta;
-    if(velocity>maxHeight) maxHeight=velocity;
-    lastY=accY;
-  }
-
-  function stopThrow(){
-    if(!throwing) return;
-    throwing=false;
+function stopThrow(){
+    if (!throwing) return;
+    throwing = false;
     window.removeEventListener("devicemotion", handleMotion);
-    endBtn.style.display='none';
-    clearTimeout(autoStopTimeout);
+    let score = Math.max(0, Math.round(maxHeight * 2));
 
-    let score=Math.max(0, Math.round(maxHeight*2));
-
-    // Animate height
-    let current=0;
+    // Animate counting up
+    let current = 0;
     clearInterval(animationInterval);
-    animationInterval=setInterval(()=>{
-      if(current>=score){clearInterval(animationInterval);showFinalModal(score);}
-      else{current++; document.getElementById("heightDisplay").innerText=`Height: ${current} m`;}
-    },15);
-  }
+    animationInterval = setInterval(() => {
+        if (current >= score){
+            clearInterval(animationInterval);
+            showFinalModal(score);
+        } else {
+            current++;
+            document.getElementById("heightDisplay").innerText = `Height: ${current} m`;
+        }
+    }, 15);
+}
 
-  function showFinalModal(score){
-    document.getElementById("finalMessage").innerText=`Your final score is ${score} m`;
-    document.getElementById("finalScoreModal").style.display='flex';
-  }
+function showFinalModal(score){
+    document.getElementById("finalMessage").innerText = "Your final score: " + score + " m";
+    document.getElementById("finalModal").style.display = "block";
+}
 
-  function submitScore(){
-    let name=document.getElementById("playerName").value||"Anonymous";
-    let text=document.getElementById("finalMessage").innerText;
-    let score=parseInt(text.match(/\d+/)[0]);
+function closeModal(){
+    document.getElementById("finalModal").style.display = "none";
+}
 
-    db.ref('scores').push({name, score, timestamp:Date.now()});
-    document.getElementById("finalScoreModal").style.display='none';
-    fetchLeaderboard();
-  }
+function submitScore(){
+    let name = document.getElementById("playerName").value || "Anonymous";
+    let score = parseInt(document.getElementById("finalMessage").innerText.match(/\d+/)[0]);
 
-  function tryAgain(){document.getElementById("finalScoreModal").style.display='none';}
+    const newRef = db.ref('scores').push();
+    newRef.set({name, score, timestamp: Date.now()})
+        .then(() => {
+            // Trim top 10
+            db.ref('scores').orderByChild('score').once('value', snapshot => {
+                let scoresArray = [];
+                snapshot.forEach(snap => {
+                    scoresArray.push({ key: snap.key, ...snap.val() });
+                });
+                scoresArray.sort((a,b)=>b.score-a.score);
+                const toRemove = scoresArray.slice(10);
+                toRemove.forEach(item => db.ref('scores/' + item.key).remove());
+                fetchLeaderboard();
+            });
+        });
+    closeModal();
+}
 
-  function fetchLeaderboard(){
-    db.ref('scores').orderByChild('score').limitToLast(10).once('value', snapshot=>{
-      let scores=[];
-      snapshot.forEach(snap=>scores.push(snap.val()));
-      scores.sort((a,b)=>b.score-a.score);
-      renderLeaderboard(scores);
+/* Fetch leaderboard */
+function fetchLeaderboard(){
+    db.ref('scores').orderByChild('score').limitToLast(10).on('value', snapshot => {
+        let scoresArray = [];
+        snapshot.forEach(snap => scoresArray.push(snap.val()));
+        scoresArray.sort((a,b)=>b.score-a.score);
+        let list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
+        scoresArray.forEach(s => {
+            let li = document.createElement("li");
+            li.innerText = `${s.name}: ${s.score} m`;
+            list.appendChild(li);
+        });
     });
-  }
+}
+fetchLeaderboard();
 
-  function renderLeaderboard(scores=[]){
-    let entriesDiv=document.getElementById("entries");
-    entriesDiv.innerHTML="";
-    scores.forEach((s,i)=>{
-      entriesDiv.innerHTML+=`<div class="entry">${i+1}. ${s.name} - ${s.score} m</div>`;
-    });
-  }
-
-  fetchLeaderboard();
+/* Sidebar toggle + click outside to close */
+const hamburger = document.querySelector(".hamburger");
+const sidebar = document.getElementById("leaderboardMenu");
+hamburger.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+});
+document.addEventListener("click", function(e){
+    if(sidebar.classList.contains("open") && !sidebar.contains(e.target) && e.target !== hamburger){
+        sidebar.classList.remove("open");
+    }
+});
 </script>
-
 </body>
 </html>
