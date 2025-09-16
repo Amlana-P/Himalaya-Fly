@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Himalaya Fly Game</title>
 <style>
-  body { margin:0; font-family: sans-serif; text-align:center;
-         background: linear-gradient(to top, #6dd5fa, #2980b9); color:white;}
+  body { margin:0; font-family:sans-serif; text-align:center;
+         background:linear-gradient(to top,#6dd5fa,#2980b9); color:white;}
   header { display:flex; justify-content:space-between; align-items:center;
            padding:12px 16px; background: rgba(0,0,0,0.3);}
   .hamburger { cursor:pointer; font-size:24px; }
@@ -44,11 +44,13 @@
 </div>
 
 <h1>Himalaya Fly Game</h1>
-<p>Throw your phone (⚠️ carefully) and see how high it goes!</p>
+<p>Throw your phone (⚠️ carefully). The throw will automatically stop after 3 seconds.</p>
 
 <input type="text" id="playerName" placeholder="Enter your name" />
 <br>
 <button id="startBtn">Start Throw</button>
+<button id="endBtn" style="display:none;">End Throw Early</button>
+
 <h2 id="heightDisplay">Height: 0 m</h2>
 
 <div id="disclaimerModal">
@@ -73,8 +75,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
 <script>
-  // Your Firebase config
-   const firebaseConfig = {
+  // Firebase config - replace with your own
+  const firebaseConfig = {
     apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
     authDomain: "himalayafly.firebaseapp.com",
     databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -87,13 +89,16 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  let maxHeight = 0;
-  let throwing = false;
-  let animationInterval;
-  let lastY = null, velocity = 0;
+  let maxHeight=0, throwing=false, animationInterval, lastY=null, velocity=0, autoStopTimeout;
+
+  const startBtn = document.getElementById("startBtn");
+  const endBtn = document.getElementById("endBtn");
 
   function toggleMenu(){document.getElementById("leaderboardMenu").classList.toggle("open");}
   function acceptDisclaimer(){document.getElementById("disclaimerModal").style.display='none';}
+
+  startBtn.addEventListener("click", startThrow);
+  endBtn.addEventListener("click", stopThrow);
 
   function startThrow(){
     if(typeof DeviceMotionEvent.requestPermission==='function'){
@@ -104,8 +109,15 @@
   function startListening(){
     throwing=true; maxHeight=0; lastY=null; velocity=0;
     document.getElementById("heightDisplay").innerText="Height: 0 m";
+
     window.addEventListener("devicemotion", handleMotion);
-    setTimeout(stopThrow,3000);
+
+    // show end button for early stop
+    endBtn.style.display='inline-block';
+    endBtn.disabled=false;
+
+    // automatic stop after 3 seconds
+    autoStopTimeout = setTimeout(stopThrow,3000);
   }
 
   function handleMotion(e){
@@ -119,14 +131,20 @@
   }
 
   function stopThrow(){
+    if(!throwing) return;
     throwing=false;
     window.removeEventListener("devicemotion", handleMotion);
+    endBtn.style.display='none';
+    clearTimeout(autoStopTimeout);
+
     let score=Math.max(0, Math.round(maxHeight*2));
+
+    // Animate height
     let current=0;
     clearInterval(animationInterval);
     animationInterval=setInterval(()=>{
       if(current>=score){clearInterval(animationInterval);showFinalModal(score);}
-      else{current++;document.getElementById("heightDisplay").innerText=`Height: ${current} m`;}
+      else{current++; document.getElementById("heightDisplay").innerText=`Height: ${current} m`;}
     },15);
   }
 
@@ -139,8 +157,8 @@
     let name=document.getElementById("playerName").value||"Anonymous";
     let text=document.getElementById("finalMessage").innerText;
     let score=parseInt(text.match(/\d+/)[0]);
-    // push score to Firebase
-    db.ref('scores').push({name, score, timestamp: Date.now()});
+
+    db.ref('scores').push({name, score, timestamp:Date.now()});
     document.getElementById("finalScoreModal").style.display='none';
     fetchLeaderboard();
   }
@@ -150,18 +168,20 @@
   function fetchLeaderboard(){
     db.ref('scores').orderByChild('score').limitToLast(10).once('value', snapshot=>{
       let scores=[];
-      snapshot.forEach(snap=>{scores.push(snap.val());});
-      scores.sort((a,b)=>b.score-a.score); // descending
+      snapshot.forEach(snap=>scores.push(snap.val()));
+      scores.sort((a,b)=>b.score-a.score);
       renderLeaderboard(scores);
     });
   }
 
   function renderLeaderboard(scores=[]){
-    let entriesDiv=document.getElementById("entries"); entriesDiv.innerHTML="";
-    scores.forEach((s,i)=>{entriesDiv.innerHTML+=`<div class="entry">${i+1}. ${s.name} - ${s.score} m</div>`;});
+    let entriesDiv=document.getElementById("entries");
+    entriesDiv.innerHTML="";
+    scores.forEach((s,i)=>{
+      entriesDiv.innerHTML+=`<div class="entry">${i+1}. ${s.name} - ${s.score} m</div>`;
+    });
   }
 
-  document.getElementById("startBtn").addEventListener("click", startThrow);
   fetchLeaderboard();
 </script>
 
