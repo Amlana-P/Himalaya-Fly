@@ -1,289 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Throw Your Phone Game</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to top, #6dd5fa, #2980b9);
-      color: white;
-      margin: 0;
-      padding: 20px;
-      overflow-x: hidden;
-    }
-
-    h1 {
-      margin-bottom: 5px;
-      text-align: center;
-      font-size: 2rem;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-    }
-
-    button {
-      padding: 12px 24px;
-      margin: 10px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-    button:disabled { background: gray; cursor: not-allowed; }
-
-    #game-area {
-      text-align: center;
-      margin-right: 270px; /* space for sidebar */
-    }
-
-    #heightDisplay {
-      font-size: 26px;
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.15);
-      display: inline-block;
-      box-shadow: 0 0 12px rgba(255,255,255,0.5);
-      animation: pulseGlow 1.5s infinite alternate;
-    }
-
-    /* Sidebar leaderboard */
-    #leaderboard {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 250px;
-      height: 100%;
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(8px);
-      padding: 20px;
-      overflow-y: auto;
-      box-shadow: -3px 0 10px rgba(0,0,0,0.3);
-    }
-    #leaderboard h3 {
-      text-align: center;
-      margin-top: 0;
-    }
-    .entry {
-      background: rgba(0,0,0,0.3);
-      margin: 8px 0;
-      padding: 8px;
-      border-radius: 6px;
-      animation: fadeInUp 0.5s ease;
-    }
-
-    /* Popup message after throw */
-    #resultMessage {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-    #resultMessage.show { opacity: 1; }
-
-    /* Modal styles */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .modal-content {
-      background: white;
-      color: black;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 500px;
-      text-align: left;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      animation: slideDown 0.6s ease;
-    }
-    .modal-content h2 {
-      margin-top: 0;
-      color: red;
-    }
-    .modal-content button {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
-      margin-top: 15px;
-    }
-
-    /* Animations */
-    @keyframes slideDown {
-      from { transform: translateY(-100px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes fadeInUp {
-      from { transform: translateY(10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes pulseGlow {
-      from { box-shadow: 0 0 8px rgba(255,255,255,0.3); }
-      to { box-shadow: 0 0 18px rgba(255,255,255,0.8); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Himalaya Fly Game</title>
+<style>
+  body { margin:0; font-family: sans-serif; text-align:center;
+         background: linear-gradient(to top, #6dd5fa, #2980b9); color:white;}
+  header { display:flex; justify-content:space-between; align-items:center;
+           padding:12px 16px; background: rgba(0,0,0,0.3);}
+  .hamburger { cursor:pointer; font-size:24px; }
+  #leaderboardMenu { position:fixed; top:0; left:-300px; width:280px; height:100%;
+    background: rgba(0,0,0,0.95); padding:20px; overflow-y:auto;
+    transition:left 0.3s ease; z-index:999;}
+  #leaderboardMenu.open { left:0;}
+  #leaderboardMenu h3 { margin-top:0; color:#f1c40f;}
+  .entry { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.2);}
+  h1{margin-top:20px;font-size:28px;}
+  input{margin-top:15px;padding:10px;border-radius:6px;border:none;width:70%;max-width:300px;}
+  button{padding:12px 20px;margin:12px 6px;border:none;border-radius:8px;
+          background:#27ae60;color:white;font-size:16px;cursor:pointer;}
+  button:hover{transform:scale(1.05);background:#2ecc71;}
+  #heightDisplay{font-size:22px;margin-top:25px;transition:all 0.3s ease;}
+  #disclaimerModal{position:fixed;top:0;left:0;width:100%;height:100%;
+                   background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;}
+  #disclaimerBox{background:#fff;color:black;padding:20px;border-radius:10px;max-width:400px;text-align:center;}
+  #finalScoreModal{position:fixed;top:0;left:0;width:100%;height:100%;
+                   background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1001;}
+  #finalBox{background:#fff;color:black;padding:20px;border-radius:10px;max-width:350px;text-align:center;}
+  @media(max-width:600px){h1{font-size:22px;} button{width:80%;}}
+</style>
 </head>
 <body>
-  <div id="game-area">
-    <h1>📱 Throw Your Phone Game</h1>
-    <p>Throw your phone upwards (if you dare 😅). The game will estimate how high it goes!</p>
 
-    <input type="text" id="playerName" placeholder="Enter your name" disabled />
-    <br>
-    <button id="startBtn" disabled>Start Throw</button>
-    <button id="stopBtn" disabled>Stop</button>
+<header>
+  <div>🗻 Himalaya Fly</div>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</header>
 
-    <h2 id="heightDisplay">Height: 0 m</h2>
+<div id="leaderboardMenu">
+  <h3>🏆 Global Leaderboard</h3>
+  <div id="entries"></div>
+</div>
+
+<h1>Himalaya Fly Game</h1>
+<p>Throw your phone (⚠️ carefully) and see how high it goes!</p>
+
+<input type="text" id="playerName" placeholder="Enter your name" />
+<br>
+<button id="startBtn">Start Throw</button>
+<h2 id="heightDisplay">Height: 0 m</h2>
+
+<div id="disclaimerModal">
+  <div id="disclaimerBox">
+    <h2>⚠️ Disclaimer</h2>
+    <p>This game simulates phone throwing using sensors. Throwing your phone is dangerous.  
+      Play at your own risk. The developer is not liable for any damage or injury.</p>
+    <button onclick="acceptDisclaimer()">I Accept</button>
   </div>
+</div>
 
-  <!-- Sidebar leaderboard -->
-  <div id="leaderboard">
-    <h3>🏆 Leaderboard</h3>
-    <div id="entries"></div>
+<div id="finalScoreModal">
+  <div id="finalBox">
+    <h2 id="finalMessage"></h2>
+    <button onclick="submitScore()">Submit</button>
+    <button onclick="tryAgain()">Try Again</button>
   </div>
+</div>
 
-  <!-- Subtle popup result message -->
-  <div id="resultMessage"></div>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- Disclaimer Modal -->
-  <div id="disclaimerModal" class="modal">
-    <div class="modal-content">
-      <h2>⚠️ Disclaimer</h2>
-      <p>
-        This game involves physically throwing your phone.  
-        Throwing phones can be <b>dangerous</b> and may cause injury or damage.  
-        By playing this game, you acknowledge the risks and agree that the developer is 
-        <b>not liable</b> for any damages or injuries.  
-        Play at your own risk!
-      </p>
-      <button id="acceptBtn">I Accept & Want to Play</button>
-    </div>
-  </div>
+<script>
+  // Your Firebase config
+   const firebaseConfig = {
+    apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
+    authDomain: "himalayafly.firebaseapp.com",
+    databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "himalayafly",
+    storageBucket: "himalayafly.firebasestorage.app",
+    messagingSenderId: "342193900033",
+    appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00",
+    measurementId: "G-T58K1DT564"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-  <script>
-    let velocity = 0;
-    let lastTimestamp = null;
-    let listening = false;
-    let baseline = 0; // calibration baseline
+  let maxHeight = 0;
+  let throwing = false;
+  let animationInterval;
+  let lastY = null, velocity = 0;
 
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const heightDisplay = document.getElementById("heightDisplay");
-    const entriesDiv = document.getElementById("entries");
-    const playerNameInput = document.getElementById("playerName");
-    const disclaimerModal = document.getElementById("disclaimerModal");
-    const acceptBtn = document.getElementById("acceptBtn");
-    const resultMessage = document.getElementById("resultMessage");
+  function toggleMenu(){document.getElementById("leaderboardMenu").classList.toggle("open");}
+  function acceptDisclaimer(){document.getElementById("disclaimerModal").style.display='none';}
 
-    // Unlock game after accepting disclaimer
-    acceptBtn.onclick = () => {
-      disclaimerModal.style.display = "none";
-      startBtn.disabled = false;
-      playerNameInput.disabled = false;
-      calibrate(); // calibrate baseline gravity
-    };
+  function startThrow(){
+    if(typeof DeviceMotionEvent.requestPermission==='function'){
+      DeviceMotionEvent.requestPermission().then(res=>{if(res==='granted') startListening();});
+    }else startListening();
+  }
 
-    function calibrate() {
-      let samples = [];
-      let handler = (event) => {
-        samples.push(event.accelerationIncludingGravity.z);
-        if (samples.length > 20) {
-          baseline = samples.reduce((a,b) => a+b,0) / samples.length;
-          window.removeEventListener("devicemotion", handler);
-        }
-      };
-      window.addEventListener("devicemotion", handler);
-    }
+  function startListening(){
+    throwing=true; maxHeight=0; lastY=null; velocity=0;
+    document.getElementById("heightDisplay").innerText="Height: 0 m";
+    window.addEventListener("devicemotion", handleMotion);
+    setTimeout(stopThrow,3000);
+  }
 
-    function handleMotion(event) {
-      if (!listening) return;
-      let accZ = event.accelerationIncludingGravity.z || 0;
-      let accUp = accZ - baseline; 
-      let now = Date.now();
-      if (lastTimestamp) {
-        let dt = (now - lastTimestamp) / 1000;
-        velocity += accUp * dt;
-      }
-      lastTimestamp = now;
-    }
+  function handleMotion(e){
+    if(!throwing) return;
+    let accY=e.accelerationIncludingGravity.y||0;
+    if(lastY===null){lastY=accY; return;}
+    let delta=accY-lastY;
+    velocity+=delta;
+    if(velocity>maxHeight) maxHeight=velocity;
+    lastY=accY;
+  }
 
-    startBtn.onclick = () => {
-      if (typeof DeviceMotionEvent.requestPermission === "function") {
-        DeviceMotionEvent.requestPermission().then(response => {
-          if (response === "granted") {
-            window.addEventListener("devicemotion", handleMotion);
-          }
-        });
-      } else {
-        window.addEventListener("devicemotion", handleMotion);
-      }
-      listening = true;
-      velocity = 0;
-      lastTimestamp = null;
-      startBtn.disabled = true;
-      stopBtn.disabled = false;
-    };
+  function stopThrow(){
+    throwing=false;
+    window.removeEventListener("devicemotion", handleMotion);
+    let score=Math.max(0, Math.round(maxHeight*2));
+    let current=0;
+    clearInterval(animationInterval);
+    animationInterval=setInterval(()=>{
+      if(current>=score){clearInterval(animationInterval);showFinalModal(score);}
+      else{current++;document.getElementById("heightDisplay").innerText=`Height: ${current} m`;}
+    },15);
+  }
 
-    stopBtn.onclick = () => {
-      listening = false;
-      stopBtn.disabled = true;
-      startBtn.disabled = false;
+  function showFinalModal(score){
+    document.getElementById("finalMessage").innerText=`Your final score is ${score} m`;
+    document.getElementById("finalScoreModal").style.display='flex';
+  }
 
-      let g = 9.81;
-      if (Math.abs(velocity) < 1) velocity = 0;
+  function submitScore(){
+    let name=document.getElementById("playerName").value||"Anonymous";
+    let text=document.getElementById("finalMessage").innerText;
+    let score=parseInt(text.match(/\d+/)[0]);
+    // push score to Firebase
+    db.ref('scores').push({name, score, timestamp: Date.now()});
+    document.getElementById("finalScoreModal").style.display='none';
+    fetchLeaderboard();
+  }
 
-      let height = Math.max(0, (velocity * velocity) / (2 * g));
-      heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
+  function tryAgain(){document.getElementById("finalScoreModal").style.display='none';}
 
-      let player = playerNameInput.value || "Anonymous";
-      saveScore(player, height);
+  function fetchLeaderboard(){
+    db.ref('scores').orderByChild('score').limitToLast(10).once('value', snapshot=>{
+      let scores=[];
+      snapshot.forEach(snap=>{scores.push(snap.val());});
+      scores.sort((a,b)=>b.score-a.score); // descending
+      renderLeaderboard(scores);
+    });
+  }
 
-      showResultMessage(height.toFixed(2));
-    };
+  function renderLeaderboard(scores=[]){
+    let entriesDiv=document.getElementById("entries"); entriesDiv.innerHTML="";
+    scores.forEach((s,i)=>{entriesDiv.innerHTML+=`<div class="entry">${i+1}. ${s.name} - ${s.score} m</div>`;});
+  }
 
-    function saveScore(name, height) {
-      let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-      scores.push({ name, height: height.toFixed(2) });
-      scores.sort((a, b) => b.height - a.height);
-      scores = scores.slice(0, 10); // keep only top 10
-      localStorage.setItem("leaderboard", JSON.stringify(scores));
-      renderLeaderboard();
-    }
+  document.getElementById("startBtn").addEventListener("click", startThrow);
+  fetchLeaderboard();
+</script>
 
-    function renderLeaderboard() {
-      let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-      entriesDiv.innerHTML = "";
-      scores.forEach((s, i) => {
-        entriesDiv.innerHTML = entriesDiv.innerHTML + `<div class="entry">${i+1}. ${s.name} - ${s.height} m</div>`;
-      });
-    }
-
-    function showResultMessage(score) {
-      resultMessage.innerText = `🎉 Your score is ${score} m. Check the leaderboard →`;
-      resultMessage.classList.add("show");
-      setTimeout(() => {
-        resultMessage.classList.remove("show");
-      }, 4000);
-    }
-
-    renderLeaderboard();
-  </script>
 </body>
 </html>
