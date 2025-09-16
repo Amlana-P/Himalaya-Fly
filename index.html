@@ -5,7 +5,7 @@
   <title>Throw Your Phone Game</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to top, #6dd5fa, #2980b9);
       color: white;
       margin: 0;
@@ -13,31 +13,45 @@
       overflow-x: hidden;
     }
 
-    h1 { margin-bottom: 5px; text-align: center; }
+    h1 {
+      margin-bottom: 5px;
+      text-align: center;
+      font-size: 2rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
 
     button {
       padding: 12px 24px;
       margin: 10px;
       border: none;
-      border-radius: 8px;
-      background: #27ae60;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
       color: white;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    button:hover { transform: scale(1.05); background: #2ecc71; }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
     button:disabled { background: gray; cursor: not-allowed; }
 
     #game-area {
       text-align: center;
-      margin-right: 250px; /* space for sidebar */
+      margin-right: 270px; /* space for sidebar */
     }
 
     #heightDisplay {
-      font-size: 22px;
+      font-size: 26px;
       margin-top: 15px;
-      animation: pop 0.4s ease;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+      display: inline-block;
+      box-shadow: 0 0 12px rgba(255,255,255,0.5);
+      animation: pulseGlow 1.5s infinite alternate;
     }
 
     /* Sidebar leaderboard */
@@ -47,19 +61,27 @@
       right: 0;
       width: 250px;
       height: 100%;
-      background: rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
       padding: 20px;
       overflow-y: auto;
-      box-shadow: -3px 0 8px rgba(0,0,0,0.3);
+      box-shadow: -3px 0 10px rgba(0,0,0,0.3);
     }
     #leaderboard h3 {
       text-align: center;
       margin-top: 0;
     }
     .entry {
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-      padding: 5px 0;
+      background: rgba(0,0,0,0.3);
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
       animation: fadeInUp 0.5s ease;
+    }
+    #clearBtn {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      width: 100%;
+      margin-top: 10px;
     }
 
     /* Popup message after throw */
@@ -68,17 +90,15 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.8);
       padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 16px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
     }
-    #resultMessage.show {
-      opacity: 1;
-    }
+    #resultMessage.show { opacity: 1; }
 
     /* Modal styles */
     .modal {
@@ -106,7 +126,7 @@
       color: red;
     }
     .modal-content button {
-      background: #27ae60;
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
       margin-top: 15px;
     }
 
@@ -119,9 +139,9 @@
       from { transform: translateY(10px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    @keyframes pop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+      to { box-shadow: 0 0 18px rgba(255,255,255,0.8); }
     }
   </style>
 </head>
@@ -142,6 +162,7 @@
   <div id="leaderboard">
     <h3>🏆 Leaderboard</h3>
     <div id="entries"></div>
+    <button id="clearBtn">Clear Leaderboard</button>
   </div>
 
   <!-- Subtle popup result message -->
@@ -167,6 +188,7 @@
     let lastTimestamp = null;
     let listening = false;
     let locationData = "Unknown";
+    let baseline = 0; // calibration baseline
 
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
@@ -176,18 +198,33 @@
     const disclaimerModal = document.getElementById("disclaimerModal");
     const acceptBtn = document.getElementById("acceptBtn");
     const resultMessage = document.getElementById("resultMessage");
+    const clearBtn = document.getElementById("clearBtn");
 
     // Unlock game after accepting disclaimer
     acceptBtn.onclick = () => {
       disclaimerModal.style.display = "none";
       startBtn.disabled = false;
       playerNameInput.disabled = false;
+      calibrate(); // calibrate baseline gravity
     };
+
+    function calibrate() {
+      // Take a short sample to get baseline
+      let samples = [];
+      let handler = (event) => {
+        samples.push(event.accelerationIncludingGravity.z);
+        if (samples.length > 20) {
+          baseline = samples.reduce((a,b) => a+b,0) / samples.length;
+          window.removeEventListener("devicemotion", handler);
+        }
+      };
+      window.addEventListener("devicemotion", handler);
+    }
 
     function handleMotion(event) {
       if (!listening) return;
       let accZ = event.accelerationIncludingGravity.z || 0;
-      let accUp = accZ - 9.81; 
+      let accUp = accZ - baseline; 
       let now = Date.now();
       if (lastTimestamp) {
         let dt = (now - lastTimestamp) / 1000;
@@ -219,13 +256,15 @@
       startBtn.disabled = false;
 
       let g = 9.81;
+      // apply threshold to ignore fake throws
+      if (Math.abs(velocity) < 1) velocity = 0;
+
       let height = Math.max(0, (velocity * velocity) / (2 * g));
       heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
 
       let player = playerNameInput.value || "Anonymous";
       saveScore(player, height, locationData);
 
-      // Show subtle message
       showResultMessage(height.toFixed(2));
     };
 
@@ -233,6 +272,7 @@
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
       scores.push({ name, height: height.toFixed(2), location });
       scores.sort((a, b) => b.height - a.height);
+      scores = scores.slice(0, 10); // keep only top 10
       localStorage.setItem("leaderboard", JSON.stringify(scores));
       renderLeaderboard();
     }
@@ -241,17 +281,22 @@
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
       entriesDiv.innerHTML = "";
       scores.forEach((s, i) => {
-        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m (${s.location})</div>`;
+        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m</div>`;
       });
     }
 
     function showResultMessage(score) {
-      resultMessage.innerText = `🎉 Your score is ${score} m. Check out the leaderboard →`;
+      resultMessage.innerText = `🎉 Your score is ${score} m. Check the leaderboard →`;
       resultMessage.classList.add("show");
       setTimeout(() => {
         resultMessage.classList.remove("show");
       }, 4000);
     }
+
+    clearBtn.onclick = () => {
+      localStorage.removeItem("leaderboard");
+      renderLeaderboard();
+    };
 
     renderLeaderboard();
   </script>
