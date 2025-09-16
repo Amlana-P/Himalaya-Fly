@@ -53,7 +53,7 @@
     By playing this game, you acknowledge the risks and agree that the developer is <b>not liable</b> for any damages or injuries.  
     Play at your own risk!
   </div>
-  <p>Throw your phone upwards (gently if you must 😉). The game will estimate how high it goes!</p>
+  <p>Throw your phone upwards (if you dare 😅). The game will estimate how high it goes!</p>
 
   <input type="text" id="playerName" placeholder="Enter your name" />
   <br>
@@ -68,7 +68,8 @@
   </div>
 
   <script>
-    let maxVelocity = 0;
+    let velocity = 0;
+    let lastTimestamp = null;
     let listening = false;
     let locationData = "Unknown";
 
@@ -76,7 +77,11 @@
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         pos => {
-          locationData = `${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+          let lat = pos.coords.latitude;
+          let lon = pos.coords.longitude;
+          getCountryFromCoords(lat, lon).then(country => {
+            locationData = country || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+          });
         },
         err => console.log("Location access denied")
       );
@@ -87,20 +92,20 @@
     const heightDisplay = document.getElementById("heightDisplay");
     const entriesDiv = document.getElementById("entries");
 
-    // Capture motion events
     function handleMotion(event) {
       if (!listening) return;
+
       let accZ = event.accelerationIncludingGravity.z || 0;
-      let accY = event.accelerationIncludingGravity.y || 0;
-      let accX = event.accelerationIncludingGravity.x || 0;
 
-      // Approximate net acceleration magnitude
-      let netAcc = Math.sqrt(accX*accX + accY*accY + accZ*accZ);
+      // Approximate only vertical acceleration (subtract gravity)
+      let accUp = accZ - 9.81; 
 
-      // Treat netAcc spikes as velocity impulses
-      if (netAcc > maxVelocity) {
-        maxVelocity = netAcc;
+      let now = Date.now();
+      if (lastTimestamp) {
+        let dt = (now - lastTimestamp) / 1000; // seconds
+        velocity += accUp * dt; // integrate acceleration -> velocity
       }
+      lastTimestamp = now;
     }
 
     startBtn.onclick = () => {
@@ -115,7 +120,8 @@
         window.addEventListener("devicemotion", handleMotion);
       }
       listening = true;
-      maxVelocity = 0;
+      velocity = 0;
+      lastTimestamp = null;
       startBtn.disabled = true;
       stopBtn.disabled = false;
     };
@@ -125,11 +131,9 @@
       stopBtn.disabled = true;
       startBtn.disabled = false;
 
-      // Physics: h = v² / (2g)
-      // We approximate velocity from max acceleration spike (not perfectly accurate)
-      let velocity = maxVelocity;
+      // Calculate height
       let g = 9.81;
-      let height = (velocity * velocity) / (2 * g);
+      let height = Math.max(0, (velocity * velocity) / (2 * g));
       heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
 
       let player = document.getElementById("playerName").value || "Anonymous";
@@ -150,6 +154,18 @@
       scores.forEach((s, i) => {
         entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m (${s.location})</div>`;
       });
+    }
+
+    // Convert lat/lon → country using OpenStreetMap API
+    async function getCountryFromCoords(lat, lon) {
+      try {
+        let res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+        let data = await res.json();
+        return data.address.country;
+      } catch (e) {
+        console.log("Error fetching country", e);
+        return null;
+      }
     }
 
     renderLeaderboard();
