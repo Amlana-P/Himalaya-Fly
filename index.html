@@ -5,144 +5,161 @@
   <title>Throw Your Phone Game</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      text-align: center;
-      background: linear-gradient(135deg, #6dd5fa, #2980b9);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to top, #6dd5fa, #2980b9);
       color: white;
       margin: 0;
       padding: 20px;
       overflow-x: hidden;
     }
 
-    h1 {
-      margin-bottom: 5px;
-      font-size: 2.2em;
-      animation: fadeInDown 1s ease;
-    }
-
-    .disclaimer {
-      font-size: 14px;
-      background: rgba(255, 0, 0, 0.3);
-      border: 1px solid #ff4d4d;
-      padding: 10px;
-      margin: 12px auto;
-      border-radius: 8px;
-      max-width: 500px;
-      animation: pulse 2s infinite;
-    }
-
-    input {
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      margin: 10px 0;
-      font-size: 16px;
-      width: 200px;
-      text-align: center;
-    }
+    h1 { margin-bottom: 5px; text-align: center; }
 
     button {
-      padding: 12px 28px;
-      margin: 12px;
+      padding: 12px 24px;
+      margin: 10px;
       border: none;
-      border-radius: 25px;
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      border-radius: 8px;
+      background: #27ae60;
       color: white;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, background 0.2s;
     }
+    button:hover { transform: scale(1.05); background: #2ecc71; }
+    button:disabled { background: gray; cursor: not-allowed; }
 
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    button:disabled {
-      background: gray;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+    #game-area {
+      text-align: center;
+      margin-right: 250px; /* space for sidebar */
     }
 
     #heightDisplay {
-      margin: 20px 0;
-      font-size: 2em;
-      font-weight: bold;
-      animation: bounceIn 1s ease;
+      font-size: 22px;
+      margin-top: 15px;
+      animation: pop 0.4s ease;
     }
 
+    /* Sidebar leaderboard */
     #leaderboard {
-      margin-top: 30px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
       padding: 20px;
-      animation: fadeInUp 1.5s ease;
+      overflow-y: auto;
+      box-shadow: -3px 0 8px rgba(0,0,0,0.3);
     }
-
     #leaderboard h3 {
-      margin-bottom: 15px;
-      font-size: 1.5em;
-      text-shadow: 1px 1px 2px black;
+      text-align: center;
+      margin-top: 0;
+    }
+    .entry {
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 0;
+      animation: fadeInUp 0.5s ease;
     }
 
-    .entry {
-      background: rgba(255, 255, 255, 0.2);
-      margin: 8px auto;
-      padding: 10px;
-      border-radius: 10px;
-      max-width: 350px;
-      animation: slideIn 0.6s ease;
+    /* Popup message after throw */
+    #resultMessage {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    #resultMessage.show {
+      opacity: 1;
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 500px;
+      text-align: left;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      animation: slideDown 0.6s ease;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      color: red;
+    }
+    .modal-content button {
+      background: #27ae60;
+      margin-top: 15px;
     }
 
     /* Animations */
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes slideDown {
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
-
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
-
-    @keyframes bounceIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      60% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-50px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 5px rgba(255,0,0,0.6); }
-      50% { box-shadow: 0 0 15px rgba(255,0,0,1); }
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <h1>📱 Throw Your Phone Game</h1>
-  <div class="disclaimer">
-    ⚠️ Disclaimer: Throwing phones can be <b>dangerous</b> and may cause injury or damage.  
-    By playing, you agree the developer is <b>not liable</b>. Play at your own risk!
+  <div id="game-area">
+    <h1>📱 Throw Your Phone Game</h1>
+    <p>Throw your phone upwards (if you dare 😅). The game will estimate how high it goes!</p>
+
+    <input type="text" id="playerName" placeholder="Enter your name" disabled />
+    <br>
+    <button id="startBtn" disabled>Start Throw</button>
+    <button id="stopBtn" disabled>Stop</button>
+
+    <h2 id="heightDisplay">Height: 0 m</h2>
   </div>
 
-  <p>Throw your phone upwards (if you dare 😅). We’ll estimate how high it goes!</p>
-
-  <input type="text" id="playerName" placeholder="Enter your name" />
-  <br>
-  <button id="startBtn">Start Throw</button>
-  <button id="stopBtn" disabled>Stop</button>
-
-  <h2 id="heightDisplay">Height: 0 m</h2>
-
+  <!-- Sidebar leaderboard -->
   <div id="leaderboard">
     <h3>🏆 Leaderboard</h3>
     <div id="entries"></div>
+  </div>
+
+  <!-- Subtle popup result message -->
+  <div id="resultMessage"></div>
+
+  <!-- Disclaimer Modal -->
+  <div id="disclaimerModal" class="modal">
+    <div class="modal-content">
+      <h2>⚠️ Disclaimer</h2>
+      <p>
+        This game involves physically throwing your phone.  
+        Throwing phones can be <b>dangerous</b> and may cause injury or damage.  
+        By playing this game, you acknowledge the risks and agree that the developer is 
+        <b>not liable</b> for any damages or injuries.  
+        Play at your own risk!
+      </p>
+      <button id="acceptBtn">I Accept & Want to Play</button>
+    </div>
   </div>
 
   <script>
@@ -151,23 +168,21 @@
     let listening = false;
     let locationData = "Unknown";
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          let lat = pos.coords.latitude;
-          let lon = pos.coords.longitude;
-          getCountryFromCoords(lat, lon).then(country => {
-            locationData = country || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-          });
-        },
-        err => console.log("Location access denied")
-      );
-    }
-
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
     const heightDisplay = document.getElementById("heightDisplay");
     const entriesDiv = document.getElementById("entries");
+    const playerNameInput = document.getElementById("playerName");
+    const disclaimerModal = document.getElementById("disclaimerModal");
+    const acceptBtn = document.getElementById("acceptBtn");
+    const resultMessage = document.getElementById("resultMessage");
+
+    // Unlock game after accepting disclaimer
+    acceptBtn.onclick = () => {
+      disclaimerModal.style.display = "none";
+      startBtn.disabled = false;
+      playerNameInput.disabled = false;
+    };
 
     function handleMotion(event) {
       if (!listening) return;
@@ -205,12 +220,13 @@
 
       let g = 9.81;
       let height = Math.max(0, (velocity * velocity) / (2 * g));
-
       heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
-      heightDisplay.style.animation = "bounceIn 1s ease";
 
-      let player = document.getElementById("playerName").value || "Anonymous";
+      let player = playerNameInput.value || "Anonymous";
       saveScore(player, height, locationData);
+
+      // Show subtle message
+      showResultMessage(height.toFixed(2));
     };
 
     function saveScore(name, height, location) {
@@ -225,23 +241,16 @@
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
       entriesDiv.innerHTML = "";
       scores.forEach((s, i) => {
-        let div = document.createElement("div");
-        div.className = "entry";
-        div.style.animationDelay = `${i * 0.1}s`; // staggered animation
-        div.innerHTML = `${i+1}. ${s.name} - ${s.height} m (${s.location})`;
-        entriesDiv.appendChild(div);
+        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m (${s.location})</div>`;
       });
     }
 
-    async function getCountryFromCoords(lat, lon) {
-      try {
-        let res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-        let data = await res.json();
-        return data.address.country;
-      } catch (e) {
-        console.log("Error fetching country", e);
-        return null;
-      }
+    function showResultMessage(score) {
+      resultMessage.innerText = `🎉 Your score is ${score} m. Check out the leaderboard →`;
+      resultMessage.classList.add("show");
+      setTimeout(() => {
+        resultMessage.classList.remove("show");
+      }, 4000);
     }
 
     renderLeaderboard();
