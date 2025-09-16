@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shake Your Phone Game</title>
+  <title>Throw Your Phone Game</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@
       padding: 8px;
       margin: 10px auto;
       border-radius: 6px;
-      max-width: 400px;
+      max-width: 500px;
     }
     button {
       padding: 12px 24px;
@@ -46,19 +46,21 @@
   </style>
 </head>
 <body>
-  <h1>📱 Shake Your Phone Game</h1>
+  <h1>📱 Throw Your Phone Game</h1>
   <div class="disclaimer">
-    ⚠️ Disclaimer: This game is for fun!  
-    Please <b>do not throw your phone</b>. Shake it safely in your hand to score.
+    ⚠️ Disclaimer: This game involves physically throwing your phone.  
+    Throwing phones can be <b>dangerous</b> and may cause injury or damage.  
+    By playing this game, you acknowledge the risks and agree that the developer is <b>not liable</b> for any damages or injuries.  
+    Play at your own risk!
   </div>
-  <p>Shake your phone as hard as you can. The harder the shake, the higher your score!</p>
+  <p>Throw your phone upwards (gently if you must 😉). The game will estimate how high it goes!</p>
 
   <input type="text" id="playerName" placeholder="Enter your name" />
   <br>
-  <button id="startBtn">Start Shake</button>
+  <button id="startBtn">Start Throw</button>
   <button id="stopBtn" disabled>Stop</button>
 
-  <h2 id="heightDisplay">Score: 0 points</h2>
+  <h2 id="heightDisplay">Height: 0 m</h2>
 
   <div id="leaderboard">
     <h3>🏆 Leaderboard</h3>
@@ -66,7 +68,7 @@
   </div>
 
   <script>
-    let maxShake = 0;
+    let maxVelocity = 0;
     let listening = false;
     let locationData = "Unknown";
 
@@ -95,8 +97,9 @@
       // Approximate net acceleration magnitude
       let netAcc = Math.sqrt(accX*accX + accY*accY + accZ*accZ);
 
-      if (netAcc > maxShake) {
-        maxShake = netAcc;
+      // Treat netAcc spikes as velocity impulses
+      if (netAcc > maxVelocity) {
+        maxVelocity = netAcc;
       }
     }
 
@@ -112,7 +115,7 @@
         window.addEventListener("devicemotion", handleMotion);
       }
       listening = true;
-      maxShake = 0;
+      maxVelocity = 0;
       startBtn.disabled = true;
       stopBtn.disabled = false;
     };
@@ -122,18 +125,21 @@
       stopBtn.disabled = true;
       startBtn.disabled = false;
 
-      // Use shake intensity as score
-      let score = Math.round(maxShake * 10);
-      heightDisplay.innerText = `Score: ${score} points`;
+      // Physics: h = v² / (2g)
+      // We approximate velocity from max acceleration spike (not perfectly accurate)
+      let velocity = maxVelocity;
+      let g = 9.81;
+      let height = (velocity * velocity) / (2 * g);
+      heightDisplay.innerText = `Height: ${height.toFixed(2)} m`;
 
       let player = document.getElementById("playerName").value || "Anonymous";
-      saveScore(player, score, locationData);
+      saveScore(player, height, locationData);
     };
 
-    function saveScore(name, score, location) {
+    function saveScore(name, height, location) {
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-      scores.push({ name, score, location });
-      scores.sort((a, b) => b.score - a.score);
+      scores.push({ name, height: height.toFixed(2), location });
+      scores.sort((a, b) => b.height - a.height);
       localStorage.setItem("leaderboard", JSON.stringify(scores));
       renderLeaderboard();
     }
@@ -142,7 +148,7 @@
       let scores = JSON.parse(localStorage.getItem("leaderboard") || "[]");
       entriesDiv.innerHTML = "";
       scores.forEach((s, i) => {
-        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.score} points (${s.location})</div>`;
+        entriesDiv.innerHTML += `<div class="entry">${i+1}. ${s.name} - ${s.height} m (${s.location})</div>`;
       });
     }
 
