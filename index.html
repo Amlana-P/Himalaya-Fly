@@ -68,6 +68,7 @@
 <div id="gameArea">
     <p><strong>Throw will auto-stop in 3 seconds!</strong></p>
     <button onclick="startListening()">Start Throw</button>
+    <button onclick="toggleLeaderboard()">Leaderboard</button>
     <div id="heightDisplay">Height: 0 m</div>
 </div>
 
@@ -199,6 +200,9 @@ const sidebar = document.getElementById("leaderboardMenu");
 hamburger.addEventListener("click", () => {
     sidebar.classList.toggle("open");
 });
+function toggleLeaderboard(){
+    sidebar.classList.toggle("open");
+}
 document.addEventListener("click", function(e){
     if(sidebar.classList.contains("open") && !sidebar.contains(e.target) && e.target !== hamburger){
         sidebar.classList.remove("open");
