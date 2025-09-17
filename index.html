@@ -25,19 +25,17 @@
       color: white;
       padding: 12px;
       display: flex;
-      justify-content: center; /* centered */
+      justify-content: center;
       align-items: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       position: relative;
     }
-
     header h1 {
       margin: 0;
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 1px;
     }
-
     .hamburger {
       font-size: 26px;
       cursor: pointer;
@@ -58,11 +56,7 @@
       width: 100%;
       padding: 20px;
     }
-
-    #gameArea p {
-      font-weight: 600;
-      margin-bottom: 15px;
-    }
+    #gameArea p { font-weight: 600; margin-bottom: 15px; }
 
     button {
       margin: 10px;
@@ -77,11 +71,7 @@
       transition: transform 0.2s, background 0.3s;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
-
-    button:hover {
-      background: #004c99;
-      transform: scale(1.05);
-    }
+    button:hover { background: #004c99; transform: scale(1.05); }
 
     #heightDisplay {
       margin-top: 25px;
@@ -103,13 +93,9 @@
       padding: 20px;
       transition: right 0.3s ease;
       z-index: 1001;
-      overflow-y: hidden;
+      overflow-y: auto;
     }
-
-    #sidebar.open {
-      right: 0;
-    }
-
+    #sidebar.open { right: 0; }
     #sidebar h2 {
       margin-top: 0;
       font-size: 20px;
@@ -117,14 +103,11 @@
       color: #003366;
       text-align: center;
     }
-
     #leaderboardList {
       list-style: none;
-      padding: 0;
-      margin: 0;
+      padding: 0; margin: 0;
       font-size: 16px;
     }
-
     #leaderboardList li {
       padding: 6px;
       border-bottom: 1px solid #ddd;
@@ -140,10 +123,7 @@
       display: none;
       z-index: 1000;
     }
-
-    #overlay.active {
-      display: block;
-    }
+    #overlay.active { display: block; }
 
     /* Disclaimer Modal */
     #disclaimerModal {
@@ -156,7 +136,6 @@
       justify-content: center;
       z-index: 2000;
     }
-
     #disclaimerBox {
       background: white;
       padding: 25px;
@@ -166,29 +145,10 @@
       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
       animation: popIn 0.4s ease;
     }
-
-    #disclaimerBox h2 {
-      margin-top: 0;
-      color: #c00;
-      font-size: 22px;
-    }
-
+    #disclaimerBox h2 { margin-top: 0; color: #c00; font-size: 22px; }
     @keyframes popIn {
       from { transform: scale(0.8); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
-    }
-
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 18px;
-      }
-      button {
-        font-size: 14px;
-        padding: 10px 18px;
-      }
-      #heightDisplay {
-        font-size: 22px;
-      }
     }
   </style>
 </head>
@@ -222,9 +182,22 @@
     </div>
   </div>
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script>
-    // Fake Firebase (for demo, replace with real Firebase later)
-    let leaderboard = [];
+    // 🔥 Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
+      authDomain: "himalayafly.firebaseapp.com",
+      databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "himalayafly",
+      storageBucket: "himalayafly.appspot.com",
+      messagingSenderId: "342193900033",
+      appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     let isListening = false;
     let maxHeight = 0;
@@ -235,9 +208,7 @@
       isListening = true;
       maxHeight = 0;
       document.getElementById("heightDisplay").textContent = "Height: 0 m";
-
       timeoutId = setTimeout(stopListening, 3000);
-
       window.addEventListener("devicemotion", motionHandler);
     }
 
@@ -264,36 +235,49 @@
     }
 
     function submitScore(score){
-      let name = prompt("Enter your name:");
-      if(!name) return;
-
-      leaderboard.push({name, score});
-      leaderboard.sort((a,b)=>b.score - a.score);
-      leaderboard = leaderboard.slice(0,10);
-
-      updateLeaderboard();
+      let name = prompt("Enter your name:") || "Anonymous";
+      const newRef = db.ref("scores").push();
+      newRef.set({ name, score, timestamp: Date.now() })
+        .then(()=> trimLeaderboard());
     }
 
-    function updateLeaderboard(){
-      const list = document.getElementById("leaderboardList");
-      list.innerHTML = "";
-      leaderboard.forEach((item, idx)=>{
-        const li = document.createElement("li");
-        li.textContent = `${idx+1}. ${item.name} - ${item.score} m`;
-        list.appendChild(li);
+    // keep top 10
+    function trimLeaderboard(){
+      db.ref("scores").orderByChild("score").once("value", snapshot=>{
+        let scores = [];
+        snapshot.forEach(snap=>{
+          scores.push({ key: snap.key, ...snap.val() });
+        });
+        scores.sort((a,b)=>b.score - a.score);
+        const toRemove = scores.slice(10);
+        toRemove.forEach(s => db.ref("scores/"+s.key).remove());
       });
     }
+
+    function fetchLeaderboard(){
+      db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot=>{
+        let scores = [];
+        snapshot.forEach(snap=> scores.push(snap.val()));
+        scores.sort((a,b)=>b.score - a.score);
+        const list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
+        scores.forEach((s,i)=>{
+          const li = document.createElement("li");
+          li.textContent = `${i+1}. ${s.name} - ${s.score} m`;
+          list.appendChild(li);
+        });
+      });
+    }
+    fetchLeaderboard();
 
     function toggleSidebar(){
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("overlay").classList.toggle("active");
     }
-
     function closeSidebar(){
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("overlay").classList.remove("active");
     }
-
     function acceptDisclaimer(){
       document.getElementById("disclaimerModal").style.display = "none";
     }
