@@ -174,33 +174,40 @@
     }
 
     // Save score to Firebase
-    function saveScore(name, score) {
-      db.ref("scores").push({ name, score });
-    }
+   function saveScore(name, score, region) {
+  db.ref("scores").push({ 
+      name: name, 
+      score: score, 
+      region: region, 
+      timestamp: Date.now() 
+  })
+  .then(() => {
+    console.log("✅ Score saved:", name, score, region);
+  })
+  .catch(err => {
+    console.error("❌ Error saving score:", err);
+    alert("Error saving score: " + err.message);
+  });
+}
 
     // ✅ Fetch top 10 scores properly
     function fetchLeaderboard() {
-      db.ref("scores")
-        .orderByChild("score")
-        .limitToLast(10)
-        .on("value", snapshot => {
-          let scoresArray = [];
-          snapshot.forEach(child => {
-            scoresArray.push(child.val());
-          });
+  db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot => {
+    let scoresArray = [];
+    snapshot.forEach(snap => scoresArray.push(snap.val()));
 
-          // Firebase gives ascending order, reverse it
-          scoresArray.sort((a, b) => b.score - a.score);
+    // Sort descending
+    scoresArray.sort((a, b) => b.score - a.score);
 
-          let list = document.getElementById("leaderboardList");
-          list.innerHTML = "";
-          scoresArray.forEach(s => {
-            let li = document.createElement("li");
-            li.innerText = `${s.name}: ${s.score} m`;
-            list.appendChild(li);
-          });
-        });
-    }
+    let list = document.getElementById("leaderboardList");
+    list.innerHTML = "";
+    scoresArray.forEach(s => {
+      let li = document.createElement("li");
+      li.innerText = `${s.name || "Anonymous"} - ${s.score} m (${s.region || "Unknown"})`;
+      list.appendChild(li);
+    });
+  });
+}
 
     fetchLeaderboard();
   </script>
