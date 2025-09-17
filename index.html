@@ -135,7 +135,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 /* Game Vars */
-let throwing = false, maxHeight = 0, lastY = null, velocity = 0, animationInterval;
+let throwing = false, maxHeight = 0, animationInterval;
 
 /* Countdown before throw starts */
 function startCountdown() {
@@ -153,21 +153,34 @@ function startCountdown() {
     }, 1000);
 }
 
+/* Motion Handler */
 function handleMotion(event) {
     if (!throwing) return;
-    let y = event.accelerationIncludingGravity.y || 0;
-    if (lastY !== null) {
-        velocity += (y - lastY) * 0.1;
-        maxHeight += velocity * 0.05;
-        if (maxHeight < 0) maxHeight = 0;
-        document.getElementById("heightDisplay").innerText = "Height: " + Math.round(maxHeight) + " m";
+
+    const acc = event.accelerationIncludingGravity;
+    if (!acc) return;
+
+    // Use total acceleration magnitude
+    let totalAcc = Math.sqrt(
+        (acc.x || 0) ** 2 +
+        (acc.y || 0) ** 2 +
+        (acc.z || 0) ** 2
+    );
+
+    // Remove gravity baseline (~9.8)
+    let netAcc = Math.abs(totalAcc - 9.8);
+
+    // Peak detection
+    if (netAcc > maxHeight) {
+        maxHeight = netAcc;
+        document.getElementById("heightDisplay").innerText =
+            "Height: " + Math.round(maxHeight) + " m";
     }
-    lastY = y;
 }
 
 function startListening() {
     throwing = true;
-    maxHeight = 0; lastY = null; velocity = 0;
+    maxHeight = 0;
     document.getElementById("heightDisplay").innerText = "Height: 0 m";
     window.addEventListener("devicemotion", handleMotion);
 
@@ -178,7 +191,9 @@ function stopThrow() {
     if (!throwing) return;
     throwing = false;
     window.removeEventListener("devicemotion", handleMotion);
-    let score = Math.max(0, Math.round(maxHeight * 2));
+
+    // Scale peak acceleration into a "height" score
+    let score = Math.max(0, Math.round(maxHeight * 10));
 
     // Animate score count up
     let current = 0;
@@ -207,7 +222,7 @@ function submitScore() {
     let name = document.getElementById("playerName").value || "Anonymous";
     let score = parseInt(document.getElementById("finalMessage").innerText.match(/\d+/)[0]);
 
-    // Try to fetch user region
+    // Fetch user region
     let region = "Unknown";
     fetch("https://ipapi.co/json/")
         .then(res => res.json())
@@ -221,20 +236,25 @@ function submitScore() {
 }
 
 function saveScore(name, score, region) {
-    db.ref("scores").push({ 
-        name: name, 
-        score: score, 
-        region: region, 
-        timestamp: Date.now() 
-    }).then(() => {
-        console.log("✅ Score saved:", name, score, region);
-        fetchLeaderboard();
-    }).catch(err => {
-        console.error("❌ Error saving score:", err);
-        alert("Error saving score: " + err.message);
-    });
+    const newRef = db.ref("scores").push();
+    newRef.set({ name, score, region, timestamp: Date.now() })
+        .then(() => {
+            // Keep only top 10 in DB
+            db.ref("scores").orderByChild("score").once("value", snapshot => {
+                let scoresArray = [];
+                snapshot.forEach(snap => {
+                    scoresArray.push({ key: snap.key, ...snap.val() });
+                });
+                scoresArray.sort((a, b) => b.score - a.score);
+                const toRemove = scoresArray.slice(10);
+                toRemove.forEach(item => db.ref("scores/" + item.key).remove());
+            });
+            fetchLeaderboard();
+        })
+        .catch(err => console.error("❌ Error saving score:", err));
 }
 
+/* Fetch leaderboard */
 function fetchLeaderboard() {
     db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot => {
         let scoresArray = [];
