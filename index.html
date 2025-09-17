@@ -1,213 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Himalaya Fly Game</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Himalaya Fly Game</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
     body {
-        margin: 0; font-family: Arial, sans-serif;
-        background: linear-gradient(to bottom, #87ceeb, #ffffff);
-        text-align: center;
-        overflow-x: hidden;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #4facfe, #00f2fe);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* Header */
     header {
-        background: #2c3e50; color: white; padding: 15px;
-        display: flex; justify-content: space-between; align-items: center;
+      width: 100%;
+      background: #003366;
+      color: white;
+      padding: 12px;
+      display: flex;
+      justify-content: center; /* centered */
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      position: relative;
     }
-    .hamburger { cursor: pointer; font-size: 26px; }
-    #leaderboardMenu {
-        position: fixed; top: 0; right: -300px; width: 300px; height: 100%;
-        background: #34495e; color: white; overflow-y: auto;
-        transition: right 0.3s ease; padding: 20px;
-        z-index: 2000;
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
-    #leaderboardMenu.open { right: 0; }
-    #leaderboardMenu h2 { margin-top: 0; }
-    #leaderboardList { list-style: none; padding: 0; }
-    #leaderboardList li {
-        background: rgba(255,255,255,0.1); margin: 5px 0;
-        padding: 8px; border-radius: 5px;
+
+    .hamburger {
+      font-size: 26px;
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+      right: 15px;
+      top: 10px;
     }
-    #gameArea { margin: 40px auto; max-width: 500px; }
+
+    /* Game Area */
+    #gameArea {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      padding: 20px;
+    }
+
+    #gameArea p {
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
     button {
-        background: #27ae60; border: none; color: white;
-        padding: 12px 20px; margin: 10px; border-radius: 6px;
-        font-size: 16px; cursor: pointer; transition: 0.3s;
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #0066cc;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     }
-    button:hover { background: #2ecc71; }
-    #heightDisplay { font-size: 32px; margin: 20px; font-weight: bold; }
-    /* Modal */
-    .modal {
-        display: none; position: fixed; z-index: 3000;
-        left: 0; top: 0; width: 100%; height: 100%;
-        background-color: rgba(0,0,0,0.6); text-align: center;
+
+    button:hover {
+      background: #004c99;
+      transform: scale(1.05);
     }
-    .modal-content {
-        background: #fff; margin: 15% auto; padding: 20px;
-        border-radius: 10px; width: 80%; max-width: 400px;
+
+    #heightDisplay {
+      margin-top: 25px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #222;
+      transition: all 0.5s ease;
     }
-    .modal button { margin-top: 15px; }
+
+    /* Sidebar */
+    #sidebar {
+      height: 100%;
+      width: 260px;
+      position: fixed;
+      top: 0;
+      right: -260px;
+      background: #ffffff;
+      box-shadow: -2px 0 6px rgba(0,0,0,0.3);
+      padding: 20px;
+      transition: right 0.3s ease;
+      z-index: 1001;
+      overflow-y: hidden;
+    }
+
+    #sidebar.open {
+      right: 0;
+    }
+
+    #sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #003366;
+      text-align: center;
+    }
+
+    #leaderboardList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+    }
+
+    #leaderboardList li {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    /* Overlay */
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      z-index: 1000;
+    }
+
+    #overlay.active {
+      display: block;
+    }
+
+    /* Disclaimer Modal */
+    #disclaimerModal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    #disclaimerBox {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      animation: popIn 0.4s ease;
+    }
+
+    #disclaimerBox h2 {
+      margin-top: 0;
+      color: #c00;
+      font-size: 22px;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
     @media (max-width: 600px) {
-        #leaderboardMenu { width: 80%; }
+      header h1 {
+        font-size: 18px;
+      }
+      button {
+        font-size: 14px;
+        padding: 10px 18px;
+      }
+      #heightDisplay {
+        font-size: 22px;
+      }
     }
-</style>
+  </style>
 </head>
 <body>
-<header>
+  <header>
     <h1>Himalaya Fly Game</h1>
-    <div class="hamburger">☰</div>
-</header>
+    <span class="hamburger" onclick="toggleSidebar()">☰</span>
+  </header>
 
-<!-- Sidebar Leaderboard -->
-<div id="leaderboardMenu">
-    <h2>🏆 Leaderboard</h2>
-    <ul id="leaderboardList"></ul>
-</div>
-
-<div id="gameArea">
+  <div id="gameArea">
     <p><strong>Throw will auto-stop in 3 seconds!</strong></p>
     <button onclick="startListening()">Start Throw</button>
-    <button onclick="toggleLeaderboard()">Leaderboard</button>
+    <button onclick="toggleSidebar()">Leaderboard</button>
     <div id="heightDisplay">Height: 0 m</div>
-</div>
+  </div>
 
-<!-- Final Score Modal -->
-<div id="finalModal" class="modal">
-    <div class="modal-content">
-        <p id="finalMessage"></p>
-        <input type="text" id="playerName" placeholder="Enter your name">
-        <br>
-        <button onclick="submitScore()">Submit Score</button>
-        <button onclick="closeModal()">Try Again</button>
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h2>Leaderboard</h2>
+    <ul id="leaderboardList"></ul>
+  </div>
+  <div id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Disclaimer -->
+  <div id="disclaimerModal">
+    <div id="disclaimerBox">
+      <h2>⚠️ Disclaimer</h2>
+      <p>This game measures throws using your phone’s sensors. Actually throwing your phone is <strong>dangerous</strong>. The developer is not liable for any damage.</p>
+      <p>You must accept to continue.</p>
+      <button onclick="acceptDisclaimer()">I Accept</button>
     </div>
-</div>
+  </div>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script>
-/* 🔥 Replace with your Firebase config */
-const firebaseConfig = {
-    apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
-    authDomain: "himalayafly.firebaseapp.com",
-    databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "himalayafly",
-    storageBucket: "himalayafly.firebasestorage.app",
-    messagingSenderId: "342193900033",
-    appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00",
-    measurementId: "G-T58K1DT564"
-  };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  <script>
+    // Fake Firebase (for demo, replace with real Firebase later)
+    let leaderboard = [];
 
-/* Game Vars */
-let throwing = false, maxHeight = 0, lastY = null, velocity = 0;
-let animationInterval;
+    let isListening = false;
+    let maxHeight = 0;
+    let timeoutId;
 
-function handleMotion(event){
-    if (!throwing) return;
-    let y = event.accelerationIncludingGravity.y || 0;
-    if (lastY !== null){
-        velocity += (y - lastY) * 0.1;
-        maxHeight += velocity * 0.05;
-        if (maxHeight < 0) maxHeight = 0;
-        document.getElementById("heightDisplay").innerText = "Height: " + Math.round(maxHeight) + " m";
+    function startListening(){
+      if(isListening) return;
+      isListening = true;
+      maxHeight = 0;
+      document.getElementById("heightDisplay").textContent = "Height: 0 m";
+
+      timeoutId = setTimeout(stopListening, 3000);
+
+      window.addEventListener("devicemotion", motionHandler);
     }
-    lastY = y;
-}
 
-function startListening(){
-    throwing = true;
-    maxHeight = 0; lastY = null; velocity = 0;
-    document.getElementById("heightDisplay").innerText = "Height: 0 m";
-    window.addEventListener("devicemotion", handleMotion);
+    function stopListening(){
+      if(!isListening) return;
+      isListening = false;
+      window.removeEventListener("devicemotion", motionHandler);
+      clearTimeout(timeoutId);
 
-    setTimeout(stopThrow, 3000); // auto stop after 3 sec
-}
+      const finalHeight = Math.max(0, maxHeight.toFixed(2));
+      document.getElementById("heightDisplay").textContent = `🎯 Final Height: ${finalHeight} m`;
 
-function stopThrow(){
-    if (!throwing) return;
-    throwing = false;
-    window.removeEventListener("devicemotion", handleMotion);
-    let score = Math.max(0, Math.round(maxHeight * 2));
-
-    // Animate counting up
-    let current = 0;
-    clearInterval(animationInterval);
-    animationInterval = setInterval(() => {
-        if (current >= score){
-            clearInterval(animationInterval);
-            showFinalModal(score);
-        } else {
-            current++;
-            document.getElementById("heightDisplay").innerText = `Height: ${current} m`;
+      setTimeout(()=>{
+        if(confirm(`Your final score is ${finalHeight} m.\nDo you want to submit it?`)){
+          submitScore(finalHeight);
         }
-    }, 15);
-}
-
-function showFinalModal(score){
-    document.getElementById("finalMessage").innerText = "Your final score: " + score + " m";
-    document.getElementById("finalModal").style.display = "block";
-}
-
-function closeModal(){
-    document.getElementById("finalModal").style.display = "none";
-}
-
-function submitScore(){
-    let name = document.getElementById("playerName").value || "Anonymous";
-    let score = parseInt(document.getElementById("finalMessage").innerText.match(/\d+/)[0]);
-
-    const newRef = db.ref('scores').push();
-    newRef.set({name, score, timestamp: Date.now()})
-        .then(() => {
-            // Trim top 10
-            db.ref('scores').orderByChild('score').once('value', snapshot => {
-                let scoresArray = [];
-                snapshot.forEach(snap => {
-                    scoresArray.push({ key: snap.key, ...snap.val() });
-                });
-                scoresArray.sort((a,b)=>b.score-a.score);
-                const toRemove = scoresArray.slice(10);
-                toRemove.forEach(item => db.ref('scores/' + item.key).remove());
-                fetchLeaderboard();
-            });
-        });
-    closeModal();
-}
-
-/* Fetch leaderboard */
-function fetchLeaderboard(){
-    db.ref('scores').orderByChild('score').limitToLast(10).on('value', snapshot => {
-        let scoresArray = [];
-        snapshot.forEach(snap => scoresArray.push(snap.val()));
-        scoresArray.sort((a,b)=>b.score-a.score);
-        let list = document.getElementById("leaderboardList");
-        list.innerHTML = "";
-        scoresArray.forEach(s => {
-            let li = document.createElement("li");
-            li.innerText = `${s.name}: ${s.score} m`;
-            list.appendChild(li);
-        });
-    });
-}
-fetchLeaderboard();
-
-/* Sidebar toggle + click outside to close */
-const hamburger = document.querySelector(".hamburger");
-const sidebar = document.getElementById("leaderboardMenu");
-hamburger.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-});
-function toggleLeaderboard(){
-    sidebar.classList.toggle("open");
-}
-document.addEventListener("click", function(e){
-    if(sidebar.classList.contains("open") && !sidebar.contains(e.target) && e.target !== hamburger){
-        sidebar.classList.remove("open");
+      }, 500);
     }
-});
-</script>
+
+    function motionHandler(event){
+      let accZ = event.accelerationIncludingGravity.z || 0;
+      if(accZ > 0) maxHeight += accZ * 0.01;
+      document.getElementById("heightDisplay").textContent = `Height: ${maxHeight.toFixed(2)} m`;
+    }
+
+    function submitScore(score){
+      let name = prompt("Enter your name:");
+      if(!name) return;
+
+      leaderboard.push({name, score});
+      leaderboard.sort((a,b)=>b.score - a.score);
+      leaderboard = leaderboard.slice(0,10);
+
+      updateLeaderboard();
+    }
+
+    function updateLeaderboard(){
+      const list = document.getElementById("leaderboardList");
+      list.innerHTML = "";
+      leaderboard.forEach((item, idx)=>{
+        const li = document.createElement("li");
+        li.textContent = `${idx+1}. ${item.name} - ${item.score} m`;
+        list.appendChild(li);
+      });
+    }
+
+    function toggleSidebar(){
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("active");
+    }
+
+    function closeSidebar(){
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("overlay").classList.remove("active");
+    }
+
+    function acceptDisclaimer(){
+      document.getElementById("disclaimerModal").style.display = "none";
+    }
+  </script>
 </body>
 </html>
