@@ -1,215 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Himalaya Fly Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Himalaya Fly Game</title>
+<style>
     body {
-      font-family: 'Roboto', sans-serif;
-      text-align: center;
-      background: linear-gradient(to top, #6dd5ed, #2193b0);
-      margin: 0;
-      padding: 0;
-      color: white;
+        margin: 0;
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        background: linear-gradient(to bottom, #1e3c72, #2a5298);
+        text-align: center;
+        color: white;
+        overflow-x: hidden;
     }
-    h1 {
-      font-family: 'Luckiest Guy', cursive;
-      font-size: 3em;
-      margin: 20px 0;
-      color: #ffffff;
-      text-shadow: 2px 2px #0d3b66;
+    header {
+        background: #0d1b2a;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+    header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: bold;
     }
     #gameArea {
-      margin-top: 20px;
+        margin: 40px auto;
+        max-width: 500px;
+        padding: 20px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
     }
     button {
-      background: #1565c0;
-      border: none;
-      color: white;
-      padding: 12px 24px;
-      margin: 10px;
-      border-radius: 8px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
+        background: #0077b6;
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        margin: 10px;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
     }
-    button:hover {
-      background: #1e88e5;
-      transform: scale(1.05);
-    }
+    button:hover { background: #00b4d8; }
     #heightDisplay {
-      margin: 20px 0;
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #f0f8ff;
+        font-size: 28px;
+        margin: 20px;
+        font-weight: bold;
     }
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 3000;
+        left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        text-align: center;
+    }
+    .modal-content {
+        background: #fff;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 400px;
+        color: black;
+    }
+    .modal button { margin-top: 15px; }
     #leaderboard {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        margin: 30px auto;
+        max-width: 400px;
+        padding: 15px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 12px;
     }
-    #leaderboard h2 {
-      margin: 0 0 15px 0;
-      font-family: 'Luckiest Guy', cursive;
-      color: #bbdefb;
-      text-shadow: 1px 1px #0d3b66;
+    #leaderboard h2 { margin-top: 0; }
+    #leaderboardList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
-    #leaderboard ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    #leaderboardList li {
+        background: rgba(255,255,255,0.1);
+        margin: 5px 0;
+        padding: 8px;
+        border-radius: 6px;
     }
-    #leaderboard li {
-      padding: 8px;
-      margin: 5px 0;
-      background: rgba(255,255,255,0.2);
-      border-radius: 6px;
-      color: #ffffff;
-      font-weight: 500;
-    }
-  </style>
+</style>
 </head>
 <body>
-  <h1>Himalaya Fly</h1>
-  
-  <div id="gameArea">
-    <p><strong>Throw will auto-stop in 3 seconds after countdown!</strong></p>
-    <button onclick="startListening()">Start Throw</button>
+<header>
+    <h1>🏔 Himalaya Fly Game</h1>
+</header>
+
+<div id="gameArea">
+    <p><strong>After pressing Start, throw will begin in 3 seconds!</strong></p>
+    <button onclick="startCountdown()">Start Throw</button>
     <div id="heightDisplay">Height: 0 m</div>
-  </div>
+</div>
 
-  <div id="leaderboard">
-    <h2>Leaderboard</h2>
+<!-- Final Score Modal -->
+<div id="finalModal" class="modal">
+    <div class="modal-content">
+        <p id="finalMessage"></p>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <br>
+        <button onclick="submitScore()">Submit Score</button>
+        <button onclick="closeModal()">Try Again</button>
+    </div>
+</div>
+
+<!-- Leaderboard -->
+<div id="leaderboard">
+    <h2>🏆 Leaderboard</h2>
     <ul id="leaderboardList"></ul>
-  </div>
+</div>
 
-  <script>
-    // 🔥 Firebase config (replace with your own values from Firebase console)
-  const firebaseConfig = { apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU", authDomain: "himalayafly.firebaseapp.com", databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "himalayafly", storageBucket: "himalayafly.firebasestorage.app", messagingSenderId: "342193900033", appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00", measurementId: "G-T58K1DT564" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+/* 🔥 Replace with your Firebase config */
+const firebaseConfig = {
+    apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
+    authDomain: "himalayafly.firebaseapp.com",
+    databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "himalayafly",
+    storageBucket: "himalayafly.firebasestorage.app",
+    messagingSenderId: "342193900033",
+    appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00",
+    measurementId: "G-T58K1DT564"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    let listening = false;
-    let maxHeight = 0;
+/* Game Vars */
+let throwing = false, maxHeight = 0, lastY = null, velocity = 0, animationInterval;
 
-    function startListening() {
-      if (listening) return;
-      listening = true;
-      maxHeight = 0;
-
-      const display = document.getElementById("heightDisplay");
-      display.innerText = "Get ready! Measuring will start in 3 seconds...";
-      
-      let countdown = 3;
-      const countdownInterval = setInterval(() => {
-        display.innerText = `Get ready! Throw in ${countdown}...`;
+/* Countdown before throw starts */
+function startCountdown() {
+    let display = document.getElementById("heightDisplay");
+    let countdown = 3;
+    display.innerText = "Get ready! Throw starts in " + countdown + " sec...";
+    let timer = setInterval(() => {
         countdown--;
-        if (countdown < 0) {
-          clearInterval(countdownInterval);
-          display.innerText = "Measuring throw...";
-          beginMeasurement();
+        if (countdown > 0) {
+            display.innerText = "Get ready! Throw starts in " + countdown + " sec...";
+        } else {
+            clearInterval(timer);
+            startListening();
         }
-      }, 1000);
+    }, 1000);
+}
+
+function handleMotion(event) {
+    if (!throwing) return;
+    let y = event.accelerationIncludingGravity.y || 0;
+    if (lastY !== null) {
+        velocity += (y - lastY) * 0.1;
+        maxHeight += velocity * 0.05;
+        if (maxHeight < 0) maxHeight = 0;
+        document.getElementById("heightDisplay").innerText = "Height: " + Math.round(maxHeight) + " m";
     }
+    lastY = y;
+}
 
-    function beginMeasurement() {
-      if (window.DeviceMotionEvent) {
-        window.addEventListener("devicemotion", handleMotion);
-        setTimeout(stopListening, 3000); // stop after 3s
-      } else {
-        alert("DeviceMotion not supported on your phone.");
-      }
-    }
+function startListening() {
+    throwing = true;
+    maxHeight = 0; lastY = null; velocity = 0;
+    document.getElementById("heightDisplay").innerText = "Height: 0 m";
+    window.addEventListener("devicemotion", handleMotion);
 
-    function handleMotion(event) {
-      const acc = event.accelerationIncludingGravity;
-      if (!acc) return;
+    setTimeout(stopThrow, 3000); // auto stop after 3 sec
+}
 
-      let totalAcc = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-      let estimatedHeight = (totalAcc - 9.8) * 0.05; // tuned scaling
+function stopThrow() {
+    if (!throwing) return;
+    throwing = false;
+    window.removeEventListener("devicemotion", handleMotion);
+    let score = Math.max(0, Math.round(maxHeight * 2));
 
-      if (estimatedHeight > maxHeight) {
-        maxHeight = estimatedHeight;
-        document.getElementById("heightDisplay").innerText = `Height: ${maxHeight.toFixed(2)} m`;
-      }
-    }
+    // Animate score count up
+    let current = 0;
+    clearInterval(animationInterval);
+    animationInterval = setInterval(() => {
+        if (current >= score) {
+            clearInterval(animationInterval);
+            showFinalModal(score);
+        } else {
+            current++;
+            document.getElementById("heightDisplay").innerText = `Height: ${current} m`;
+        }
+    }, 15);
+}
 
-    function stopListening() {
-      window.removeEventListener("devicemotion", handleMotion);
-      listening = false;
+function showFinalModal(score) {
+    document.getElementById("finalMessage").innerText = "Your final score: " + score + " m";
+    document.getElementById("finalModal").style.display = "block";
+}
 
-      const finalHeight = Math.max(0, maxHeight.toFixed(2));
-      document.getElementById("heightDisplay").innerText = `Final Height: ${finalHeight} m`;
+function closeModal() {
+    document.getElementById("finalModal").style.display = "none";
+}
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async pos => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          let country = await getCountryFromCoords(lat, lon);
+function submitScore() {
+    let name = document.getElementById("playerName").value || "Anonymous";
+    let score = parseInt(document.getElementById("finalMessage").innerText.match(/\d+/)[0]);
 
-          alert(`Your final score: ${finalHeight} m\nLocation: ${country}`);
-          saveScore(country, finalHeight);
+    // Try to fetch user region
+    let region = "Unknown";
+    fetch("https://ipapi.co/json/")
+        .then(res => res.json())
+        .then(data => {
+            region = data.country_name || "Unknown";
+        })
+        .finally(() => {
+            saveScore(name, score, region);
+            closeModal();
         });
-      }
-    }
-
-    // Reverse geocode lat/lon → country
-    async function getCountryFromCoords(lat, lon) {
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-        const data = await res.json();
-        return data.address.country || "Unknown";
-      } catch (e) {
-        return "Unknown";
-      }
-    }
-
-    // Save score to Firebase
-   function saveScore(name, score, region) {
-  db.ref("scores").push({ 
-      name: name, 
-      score: score, 
-      region: region, 
-      timestamp: Date.now() 
-  })
-  .then(() => {
-    console.log("✅ Score saved:", name, score, region);
-  })
-  .catch(err => {
-    console.error("❌ Error saving score:", err);
-    alert("Error saving score: " + err.message);
-  });
 }
 
-    // ✅ Fetch top 10 scores properly
-    function fetchLeaderboard() {
-  db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot => {
-    let scoresArray = [];
-    snapshot.forEach(snap => scoresArray.push(snap.val()));
-
-    // Sort descending
-    scoresArray.sort((a, b) => b.score - a.score);
-
-    let list = document.getElementById("leaderboardList");
-    list.innerHTML = "";
-    scoresArray.forEach(s => {
-      let li = document.createElement("li");
-      li.innerText = `${s.name || "Anonymous"} - ${s.score} m (${s.region || "Unknown"})`;
-      list.appendChild(li);
+function saveScore(name, score, region) {
+    db.ref("scores").push({ 
+        name: name, 
+        score: score, 
+        region: region, 
+        timestamp: Date.now() 
+    }).then(() => {
+        console.log("✅ Score saved:", name, score, region);
+        fetchLeaderboard();
+    }).catch(err => {
+        console.error("❌ Error saving score:", err);
+        alert("Error saving score: " + err.message);
     });
-  });
 }
 
-    fetchLeaderboard();
-  </script>
+function fetchLeaderboard() {
+    db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot => {
+        let scoresArray = [];
+        snapshot.forEach(snap => scoresArray.push(snap.val()));
+
+        scoresArray.sort((a, b) => b.score - a.score);
+
+        let list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
+        scoresArray.forEach(s => {
+            let li = document.createElement("li");
+            li.innerText = `${s.name || "Anonymous"} - ${s.score} m (${s.region || "Unknown"})`;
+            list.appendChild(li);
+        });
+    });
+}
+fetchLeaderboard();
+</script>
 </body>
 </html>
