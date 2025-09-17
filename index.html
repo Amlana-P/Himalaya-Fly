@@ -1,286 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Himalaya Fly Game</title>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Himalaya Fly Game</title>
+<style>
     body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom, #4facfe, #00f2fe);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      overflow-x: hidden;
+        margin: 0;
+        font-family: 'Poppins', Arial, sans-serif;
+        background: linear-gradient(to bottom, #87ceeb, #ffffff);
+        text-align: center;
+        overflow-x: hidden;
     }
 
-    /* Header */
     header {
-      width: 100%;
-      background: #003366;
-      color: white;
-      padding: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      position: relative;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .hamburger {
-      font-size: 26px;
-      cursor: pointer;
-      user-select: none;
-      position: absolute;
-      right: 15px;
-      top: 10px;
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        font-family: 'Trebuchet MS', sans-serif;
     }
 
-    /* Game Area */
     #gameArea {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      width: 100%;
-      padding: 20px;
+        margin: 30px auto;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
-    #gameArea p { font-weight: 600; margin-bottom: 15px; }
 
     button {
-      margin: 10px;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      background: #0066cc;
-      color: white;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        background: #27ae60;
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        margin: 10px;
+        border-radius: 10px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.3s;
     }
-    button:hover { background: #004c99; transform: scale(1.05); }
+
+    button:hover {
+        background: #2ecc71;
+    }
 
     #heightDisplay {
-      margin-top: 25px;
-      font-size: 28px;
-      font-weight: 700;
-      color: #222;
-      transition: all 0.5s ease;
+        font-size: 36px;
+        margin: 20px;
+        font-weight: bold;
+        color: #2c3e50;
     }
 
-    /* Sidebar */
-    #sidebar {
-      height: 100%;
-      width: 260px;
-      position: fixed;
-      top: 0;
-      right: -260px;
-      background: #ffffff;
-      box-shadow: -2px 0 6px rgba(0,0,0,0.3);
-      padding: 20px;
-      transition: right 0.3s ease;
-      z-index: 1001;
-      overflow-y: auto;
+    /* Leaderboard section */
+    #leaderboard {
+        margin-top: 30px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
     }
-    #sidebar.open { right: 0; }
-    #sidebar h2 {
-      margin-top: 0;
-      font-size: 20px;
-      font-weight: 700;
-      color: #003366;
-      text-align: center;
+
+    #leaderboard h2 {
+        margin: 0 0 10px;
+        font-size: 22px;
+        color: #2c3e50;
     }
+
     #leaderboardList {
-      list-style: none;
-      padding: 0; margin: 0;
-      font-size: 16px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
+
     #leaderboardList li {
-      padding: 6px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
+        background: rgba(44, 62, 80, 0.1);
+        margin: 5px 0;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 16px;
     }
 
-    /* Overlay */
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      z-index: 1000;
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        text-align: center;
     }
-    #overlay.active { display: block; }
 
-    /* Disclaimer Modal */
-    #disclaimerModal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
+    .modal-content {
+        background: #fff;
+        margin: 25% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 400px;
     }
-    #disclaimerBox {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-      animation: popIn 0.4s ease;
+
+    .modal button {
+        margin-top: 15px;
     }
-    #disclaimerBox h2 { margin-top: 0; color: #c00; font-size: 22px; }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <header>
-    <h1>Himalaya Fly Game</h1>
-    <span class="hamburger" onclick="toggleSidebar()">☰</span>
-  </header>
+<header>🏔️ Himalaya Fly Game</header>
 
-  <div id="gameArea">
+<div id="gameArea">
     <p><strong>Throw will auto-stop in 3 seconds!</strong></p>
     <button onclick="startListening()">Start Throw</button>
-    <button onclick="toggleSidebar()">Leaderboard</button>
     <div id="heightDisplay">Height: 0 m</div>
-  </div>
+</div>
 
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <h2>Leaderboard</h2>
+<!-- Leaderboard -->
+<div id="leaderboard">
+    <h2>🏆 Leaderboard</h2>
     <ul id="leaderboardList"></ul>
-  </div>
-  <div id="overlay" onclick="closeSidebar()"></div>
+</div>
 
-  <!-- Disclaimer -->
-  <div id="disclaimerModal">
-    <div id="disclaimerBox">
-      <h2>⚠️ Disclaimer</h2>
-      <p>This game measures throws using your phone’s sensors. Actually throwing your phone is <strong>dangerous</strong>. The developer is not liable for any damage.</p>
-      <p>You must accept to continue.</p>
-      <button onclick="acceptDisclaimer()">I Accept</button>
+<!-- Final Score Modal -->
+<div id="finalModal" class="modal">
+    <div class="modal-content">
+        <p id="finalMessage"></p>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <br>
+        <button onclick="submitScore()">Submit Score</button>
+        <button onclick="closeModal()">Try Again</button>
     </div>
-  </div>
+</div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script>
-    // 🔥 Your Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
-      authDomain: "himalayafly.firebaseapp.com",
-      databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "himalayafly",
-      storageBucket: "himalayafly.appspot.com",
-      messagingSenderId: "342193900033",
-      appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+/* 🔥 Replace with your Firebase config */
+const firebaseConfig = {
+    apiKey: "AIzaSyBmjXmGD9jzBIWJxm2TPp9oaQRVN_v7TtU",
+    authDomain: "himalayafly.firebaseapp.com",
+    databaseURL: "https://himalayafly-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "himalayafly",
+    storageBucket: "himalayafly.firebasestorage.app",
+    messagingSenderId: "342193900033",
+    appId: "1:342193900033:web:1d2d0a5cf158e4075c8e00",
+    measurementId: "G-T58K1DT564"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    let isListening = false;
-    let maxHeight = 0;
-    let timeoutId;
+/* Game Vars */
+let throwing = false, maxHeight = 0, lastY = null, velocity = 0;
+let animationInterval;
 
-    function startListening(){
-      if(isListening) return;
-      isListening = true;
-      maxHeight = 0;
-      document.getElementById("heightDisplay").textContent = "Height: 0 m";
-      timeoutId = setTimeout(stopListening, 3000);
-      window.addEventListener("devicemotion", motionHandler);
+function handleMotion(event) {
+    if (!throwing) return;
+    let y = event.accelerationIncludingGravity?.y || 0;
+    if (lastY !== null) {
+        velocity += (y - lastY) * 0.1;
+        maxHeight += velocity * 0.05;
+        if (maxHeight < 0) maxHeight = 0;
+        document.getElementById("heightDisplay").innerText = "Height: " + Math.round(maxHeight) + " m";
     }
+    lastY = y;
+}
 
-    function stopListening(){
-      if(!isListening) return;
-      isListening = false;
-      window.removeEventListener("devicemotion", motionHandler);
-      clearTimeout(timeoutId);
+function startListening() {
+    throwing = true;
+    maxHeight = 0; lastY = null; velocity = 0;
+    document.getElementById("heightDisplay").innerText = "Height: 0 m";
+    window.addEventListener("devicemotion", handleMotion);
 
-      const finalHeight = Math.max(0, maxHeight.toFixed(2));
-      document.getElementById("heightDisplay").textContent = `🎯 Final Height: ${finalHeight} m`;
+    setTimeout(stopThrow, 3000); // auto stop after 3 sec
+}
 
-      setTimeout(()=>{
-        if(confirm(`Your final score is ${finalHeight} m.\nDo you want to submit it?`)){
-          submitScore(finalHeight);
+function stopThrow() {
+    if (!throwing) return;
+    throwing = false;
+    window.removeEventListener("devicemotion", handleMotion);
+    let score = Math.max(0, Math.round(maxHeight * 2));
+
+    // Animate counting up
+    let current = 0;
+    clearInterval(animationInterval);
+    animationInterval = setInterval(() => {
+        if (current >= score) {
+            clearInterval(animationInterval);
+            showFinalModal(score);
+        } else {
+            current++;
+            document.getElementById("heightDisplay").innerText = `Height: ${current} m`;
         }
-      }, 500);
-    }
+    }, 15);
+}
 
-    function motionHandler(event){
-      let accZ = event.accelerationIncludingGravity.z || 0;
-      if(accZ > 0) maxHeight += accZ * 0.01;
-      document.getElementById("heightDisplay").textContent = `Height: ${maxHeight.toFixed(2)} m`;
-    }
+function showFinalModal(score) {
+    document.getElementById("finalMessage").innerText = "Your final score: " + score + " m";
+    document.getElementById("finalModal").style.display = "block";
+}
 
-    function submitScore(score){
-      let name = prompt("Enter your name:") || "Anonymous";
-      const newRef = db.ref("scores").push();
-      newRef.set({ name, score, timestamp: Date.now() })
-        .then(()=> trimLeaderboard());
-    }
+function closeModal() {
+    document.getElementById("finalModal").style.display = "none";
+}
 
-    // keep top 10
-    function trimLeaderboard(){
-      db.ref("scores").orderByChild("score").once("value", snapshot=>{
-        let scores = [];
-        snapshot.forEach(snap=>{
-          scores.push({ key: snap.key, ...snap.val() });
-        });
-        scores.sort((a,b)=>b.score - a.score);
-        const toRemove = scores.slice(10);
-        toRemove.forEach(s => db.ref("scores/"+s.key).remove());
-      });
-    }
+function submitScore() {
+    let name = document.getElementById("playerName").value || "Anonymous";
+    let score = parseInt(document.getElementById("finalMessage").innerText.match(/\d+/)[0]);
 
-    function fetchLeaderboard(){
-      db.ref("scores").orderByChild("score").limitToLast(10).on("value", snapshot=>{
-        let scores = [];
-        snapshot.forEach(snap=> scores.push(snap.val()));
-        scores.sort((a,b)=>b.score - a.score);
-        const list = document.getElementById("leaderboardList");
+    const newRef = db.ref("scores").push();
+    newRef.set({ name, score, timestamp: Date.now() }).then(() => {
+        fetchLeaderboard(); // reload leaderboard
+    });
+    closeModal();
+}
+
+/* Fetch leaderboard */
+function fetchLeaderboard() {
+    db.ref("scores").once("value", snapshot => {
+        let scoresArray = [];
+        snapshot.forEach(snap => scoresArray.push(snap.val()));
+        scoresArray.sort((a, b) => b.score - a.score);
+        scoresArray = scoresArray.slice(0, 10);
+
+        let list = document.getElementById("leaderboardList");
         list.innerHTML = "";
-        scores.forEach((s,i)=>{
-          const li = document.createElement("li");
-          li.textContent = `${i+1}. ${s.name} - ${s.score} m`;
-          list.appendChild(li);
+        scoresArray.forEach(s => {
+            let li = document.createElement("li");
+            li.innerText = `${s.name}: ${s.score} m`;
+            list.appendChild(li);
         });
-      });
-    }
-    fetchLeaderboard();
-
-    function toggleSidebar(){
-      document.getElementById("sidebar").classList.toggle("open");
-      document.getElementById("overlay").classList.toggle("active");
-    }
-    function closeSidebar(){
-      document.getElementById("sidebar").classList.remove("open");
-      document.getElementById("overlay").classList.remove("active");
-    }
-    function acceptDisclaimer(){
-      document.getElementById("disclaimerModal").style.display = "none";
-    }
-  </script>
+    });
+}
+fetchLeaderboard();
+</script>
 </body>
 </html>
