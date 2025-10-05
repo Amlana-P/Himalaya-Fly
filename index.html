@@ -282,29 +282,32 @@ async function saveScore(name, score, region){
 
 /* ---------- LEADERBOARD (realtime) ---------- */
 
-function fetchLeaderboard(){
-  // query top 10 by score
-  db.ref('scores')
-    .orderByChild('score')
-    .limitToLast(10)
-    .on('value', snapshot => {
-      const arr = [];
-      snapshot.forEach(child => arr.push(child.val()));
-      // sort descending (limitToLast gives ascending)
-      arr.sort((a,b)=> (b.score||0) - (a.score||0));
+function fetchLeaderboard() {
+    db.ref("scores")
+      .orderByChild("score")
+      .limitToLast(10)
+      .on("value", snapshot => {
+          const scoresArray = [];
 
-      const list = document.getElementById('leaderboardList');
-      list.innerHTML = '';
-      arr.forEach((s, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${i+1}. ${s.name || 'Anonymous'} — ${s.score} m (${s.region||'Unknown'})`;
-        list.appendChild(li);
+          snapshot.forEach(childSnap => {
+              scoresArray.push(childSnap.val());
+          });
+
+          // Sort descending (highest first)
+          scoresArray.sort((a, b) => b.score - a.score);
+
+          const list = document.getElementById("leaderboardList");
+          list.innerHTML = "";
+
+          // Display top 10 scores
+          scoresArray.forEach((s, i) => {
+              const li = document.createElement("li");
+              li.innerHTML = `<strong>#${i + 1}</strong> ${s.name || "Anonymous"} — ${s.score} m <br><small>${s.region || "Unknown"}</small>`;
+              list.appendChild(li);
+          });
       });
-      dbg('Leaderboard updated (' + arr.length + ' entries)');
-    }, err => {
-      dbg('Leaderboard listener error: ' + (err && err.message));
-    });
 }
+
 
 /* initialize */
 fetchLeaderboard();
